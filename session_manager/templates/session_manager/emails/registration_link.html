@@ -1,0 +1,6 @@
+{% extends 'session_manager/emails/email_base.html' %}
+
+{% block email_body %}
+	<p>Here is your registration link for {{app_name}}! It expires in 48 hours.</p>
+	<a href="{{token.link}}"><button>Complete registration</button></a>
+{% endblock %}

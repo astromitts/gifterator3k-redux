@@ -1,0 +1,27 @@
+<div class="email-preview">
+	<div class="email-preview_help">
+		<p>You are seeing this because you have PREVIEW_EMAILS_IN_APP=True in your settings.py file.</p>
+		<p>You should turn this setting off in production.</p>
+	</div>
+	<div class="email-preview_header as-table">
+		<div class="as-row">
+			<div class="as-cell as-cell_xs">Email Type: </div>
+			<div class="as-cell">{{email.email_type}}</div>
+		</div>
+		<div class="as-row">
+			<div class="as-cell as-cell_xs">To: </div>
+			<div class="as-cell">{{email.to_email}}</div>
+		</div>
+		<div class="as-row">
+			<div class="as-cell as-cell_xs">From: </div>
+			<div class="as-cell">{{email.from_email}}</div>
+		</div>
+		<div class="as-row">
+			<div class="as-cell as-cell_xs">Subject: </div>
+			<div class="as-cell">{{email.subject}}</div>
+		</div>
+	</div>
+	<div class="email-preview_body">
+		{{email.html_body}}
+	</div>
+</div>

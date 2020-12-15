@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="author" content="Bo Morin">
+	<title>{% block page_title %}{{APP_NAME}}{% endblock %}</title>
+	<link rel="shortcut icon" href="{% static 'site-images/favicon.ico' %}" />
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+	<link href="{% static 'vendors/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href= 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/ui-lightness/jquery-ui.css' rel='stylesheet'> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" > </script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" > </script>
+	<script src="{% static 'vendors/bootstrap/js/bootstrap.min.js' %}"></script>
+	{% block extra_js %}{% endblock %}
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+	{% block extra_css %}{% endblock %}
+</head>
+
+<body>
+	{% block header_nav %}
+		<nav class="navbar navbar-expand-sm bg-light navbar-light">
+			<div class="container">
+				<a class="navbar-brand float-left" href="{% url 'session_manager_profile' %}">{{APP_NAME}}
+				</a>
+				<ul class="navbar-nav">
+					{% if request.user.is_authenticated %}
+						<li class="nav-item">
+							<a href="{% url 'session_manager_profile' %}" class="nav-link">Logged in as: {{request.user.username}}</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'session_manager_logout' %}">Log Out</a>
+						</li>
+					{% else %}
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'session_manager_register' %}">Register</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'session_manager_login' %}">Log In</a>
+						</li>
+					{% endif %}
+				</ul>
+			</div>
+		</nav>
+	{% endblock %}
+	{% if breadcrumbs %}
+		<div class="container">
+			<nav aria-label="breadcrumb">
+			  <ol class="breadcrumb">
+			  	{% for title, link in breadcrumbs %}
+					{% if link %}
+						<li class="breadcrumb-item"><a href="{{link}}">{{title}}</a></li>
+					{% else %}
+						<li class="breadcrumb-item active">{{title}}</li>
+					{% endif %}
+				{% endfor %}
+			  </ol>
+			</nav>
+		</div>
+	{% endif %}
+	<div class="container">
+		<div id="main-content">
+		{% block messages %}
+			{% if messages %}
+				<div class="row">
+					<div class="col">
+					    {% for message in messages %}
+					    <div class="alert alert-{% if message.level_tag == 'error'%}danger{% else %}{{message.level_tag}}{% endif %}">
+						 	{{message|safe}}
+						</div>
+					    {% endfor %}
+					</div>
+				</div>
+				{% endif %}
+			{% endblock %}
+			{% block page_content %}{% endblock %}
+			{% block email_preview %}
+				{% if show_email %}
+					{% include 'session_manager/emails/app_email_preview.html' with email=show_email %}
+				{% endif %}
+			{% endblock %}
+		</div>
+	</div>
+</body>

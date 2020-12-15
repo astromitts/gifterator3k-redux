@@ -1,0 +1,15 @@
+{% block form %}
+	{% if form %}
+		<form class="form" method="POST" action="{{form_action}}">
+		{% csrf_token %}
+		<table class="table">
+			{% if form %}
+				{{form.as_p}}
+			{% endif %}
+			<tr>
+				<td colspan="100%"><input type="submit" class="btn btn-primary form-control" value="{% if submit_text %}{{submit_text}}{% else %}Submit{% endif %}" /></td>
+			</tr>
+		</table>
+		</form>
+	{% endif %}
+{% endblock %}

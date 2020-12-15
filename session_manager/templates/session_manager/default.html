@@ -1,0 +1,6 @@
+{% extends 'base/project_base.html' %}
+{% block page_content %}
+	{% if form %}
+		{% include 'session_manager/generic_form.html' with form=form %}
+	{% endif %}
+{% endblock %}

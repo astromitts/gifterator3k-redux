@@ -1,0 +1,4 @@
+base/static/.DS_Store
+base/static/vendors/.DS_Store
+*.DS_Store
+*.sqlite3

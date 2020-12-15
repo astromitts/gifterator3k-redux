@@ -1,0 +1,15 @@
+
+{% extends 'base/project_base.html' %}
+{% block page_content %}
+
+	{% include 'session_manager/generic_form.html' with form=form submit_text='Register' %}
+	
+	<div class="row">
+		<div class="col">
+			<div class="alert alert-primary">
+				Already have an account? <a href="{% url 'session_manager_login' %}">Log in here</a>.
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+Name                                         Stmts   Miss  Cover
+----------------------------------------------------------------
+session_manager/__init__.py                      0      0   100%
+session_manager/admin.py                         6      0   100%
+session_manager/apps.py                          3      3     0%
+session_manager/forms.py                        70      2    97%
+session_manager/middleware.py                   38      2    95%
+session_manager/migrations/0001_initial.py       8      0   100%
+session_manager/migrations/__init__.py           0      0   100%
+session_manager/models.py                       69      3    96%
+session_manager/tests.py                       185      0   100%
+session_manager/utils.py                        12      2    83%
+session_manager/views.py                       130     18    86%
+----------------------------------------------------------------
+TOTAL                                          521     30    94%

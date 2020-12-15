@@ -1,0 +1,80 @@
+/* Bootstrap overrides */
+
+ol.breadcrumb {
+	background-color: #FFFFFF;
+}
+
+ul.errorlist {
+	list-style-type: none;
+    padding-inline-start: 0;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #F5C6CB;
+    background-color: #F8D7DA;
+}
+
+
+/* Django overrides */
+
+span.helptext{
+	display: block;
+    font-style: italic;
+    font-size: .8rem;
+    &_required {
+    	color: red;
+    }
+}
+
+
+/* Session manager base styles */
+
+.as-table {
+	display: table;
+	width: 100%;
+	.as-row {
+		display: table-row;
+	}
+	.as-cell {
+		display: table-cell;
+		&_xs {
+			width: 7rem;
+		}
+	}
+}
+
+.as-header {
+	font-weight: bold;
+}
+
+.email-preview {
+	border: 1px solid #CCCCCC;
+	border-radius: 10px;
+	padding: 2rem;
+	width: 80%;
+	margin: 0 auto;
+	&_help {
+		text-align: center;
+		color: red;
+		font-weight: bold;
+		font-size: 2 rem;
+		padding-bottom: 2rem;
+	}
+	&_header {
+		margin-bottom: 2rem;
+		padding: 1rem 0;
+		border-top: 1px solid #CCCCCC;
+		border-bottom: 1px solid #CCCCCC;
+	}
+}
+
+form.inline {
+	display: inline !important;
+	input.submit {
+		border: none;
+		background-color: inherit;
+		color: blue;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}

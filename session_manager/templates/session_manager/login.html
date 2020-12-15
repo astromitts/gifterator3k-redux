@@ -1,0 +1,20 @@
+{% extends 'base/project_base.html' %}
+{% block page_content %}
+	{% include 'session_manager/generic_form.html' with form=form submit_text='Log in' %}
+	<div class="row">
+		<div class="col">
+			<div class="alert alert-primary">
+				{% if login_stage == 1 %}
+					Don't have an account? <a href="{% url 'session_manager_register' %}">Register here</a>.
+				{% elif login_stage == 2 %}
+					Need password help? 
+					<form class="inline" method="POST" action="{% url 'session_manager_send_reset_password_link' %}">
+						{% csrf_token %}
+						<input type="hidden" name="email" id="id_email" value="{{email}}">
+						<input type="submit" class="submit" value="Send a password reset link." />
+					</form>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
