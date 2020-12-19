@@ -22,10 +22,10 @@
 		<div class="col">
 			<div>Your default gift exchange settings are:</div>
 			<ul>
-				<li><b>likes:</b> {{request.user.userdefault.likes}}</li>
-				<li><b>dislikes:</b> {{request.user.userdefault.dislikes}}</li>
-				<li><b>allergies/sensitivies:</b> {{request.user.userdefault.allergies_or_sensitivities}}</li>
-				<li><b>shipping address:</b> {{request.user.userdefault.shipping_address}}</li>
+				<li><b>likes:</b> {{request.user.appuser.userdefault.likes}}</li>
+				<li><b>dislikes:</b> {{request.user.appuser.userdefault.dislikes}}</li>
+				<li><b>allergies/sensitivies:</b> {{request.user.appuser.userdefault.allergies_or_sensitivities}}</li>
+				<li><b>shipping address:</b> {{request.user.appuser.userdefault.shipping_address}}</li>
 			</ul>
 			<a href="{% url 'gifterator_user_manager_defaults' %}" class="btn btn-primary float-right">Update Default Settings</a>
 		</div>

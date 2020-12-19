@@ -14,6 +14,7 @@ from gifterator.forms import (
     ParticipantDetailsForm,
     ParticipantEmailForm,
     InvitationEmailForm,
+    UserDefaultForm,
 )
 from gifterator.mailer import GifteratorMailer
 from gifterator.models import (
@@ -57,6 +58,32 @@ class GifteratorBase(View):
                 'invited_list': self.invited_list,
                 'assignment_list': self.assigment_list
             })
+
+class UserDefaultManager(GifteratorBase):
+    def setup(self, request, *args, **kwargs):
+        super(UserDefaultManager, self).setup(request, *args, **kwargs)
+        self.template = loader.get_template('session_manager/default.html')
+        self.form = UserDefaultForm
+        self.context['breadcrumbs'] = [
+            ('Profile', reverse('session_manager_profile')),
+            ('Default Exchange Settings', None)
+        ]
+        self.return_url = reverse('session_manager_profile')
+
+    def get(self, request, *args, **kwargs):
+        form = self.form(instance=self.appuser.userdefault)
+        self.context.update({'form': form})
+        return HttpResponse(self.template.render(self.context, request))
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            post_data = {field: str(value) for field, value in request.POST.items()}
+            self.appuser.userdefault.update(**post_data)
+            messages.success(request, 'Updated your default goft exchange settings')
+            return redirect(self.return_url)
+        self.context.update({'form': form})
+        return HttpResponse(self.template.render(self.context, request))
 
 
 class GiftExchangeDashboard(GifteratorBase):
@@ -226,6 +253,7 @@ class GiftExchangeAdminDashboard(GifteratorBase):
             }
         )
         participant_email_form = self.participant_email_form
+        self.context['pending_count'] = self.giftexchange.giftexchangeparticipant_set.filter(status='pending').count()
         self.context['exchange_details_form'] = exchange_details_form
         self.context['participant_email_form'] = participant_email_form
         self.return_url = reverse(
@@ -420,7 +448,12 @@ class GiftExchangeFormView(GifteratorBase):
                 messages.success(request, 'You have been added as a participant of "{}"'.format(giftexchange.title))
 
 
-            return redirect(reverse('gifterator_create_giftexchange'))
+            return redirect(
+                reverse(
+                    'gifterator_exchange_admin_dashboard',
+                    kwargs={'ex_uuid': giftexchange.uuid}
+                )
+            )
 
         self.context.update({'form': form})
 

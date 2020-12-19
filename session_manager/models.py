@@ -158,8 +158,7 @@ class SessionManager(models.Model):
     @classmethod
     def preregister_user(cls, appuser, email):
         new_user = User(
-            email=email,
-            username=username
+            email=email
         )
         new_user.save()
         appuser.user = new_user

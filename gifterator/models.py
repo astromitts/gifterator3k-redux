@@ -21,6 +21,20 @@ class BaseModel(models.Model):
         self.save()
 
 
+class UserDefault(BaseModel):
+    appuser = models.OneToOneField(AppUser, on_delete=models.CASCADE)
+    likes = models.TextField(blank=True, null=True)
+    dislikes = models.TextField(blank=True, null=True)
+    allergies_or_sensitivities = models.TextField(blank=True, null=True)
+    shipping_address = models.TextField(blank=True, null=True)
+
+@receiver(post_save, sender=AppUser)
+def create_user_default_instance(sender, instance, **kwargs):
+    userdefault = UserDefault.objects.filter(appuser=instance).first()
+    if not userdefault:
+        userdefault = UserDefault(appuser=instance)
+        userdefault.save()
+
 class GiftExchange(BaseModel):
     uuid = models.UUIDField(default=uuid.uuid4)
     title = models.CharField(max_length=250, unique=True)
@@ -128,10 +142,10 @@ class GiftExchange(BaseModel):
 class GiftExchangeParticipant(BaseModel):
     giftexchange = models.ForeignKey(GiftExchange, on_delete=models.CASCADE)
     appuser = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    likes = models.TextField(blank=True, null=True)
-    dislikes = models.TextField(blank=True, null=True)
-    allergies_or_sensitivities = models.TextField(blank=True, null=True)
-    shipping_address = models.TextField(blank=True, null=True)
+    _likes = models.TextField(blank=True, null=True)
+    _dislikes = models.TextField(blank=True, null=True)
+    _allergies_or_sensitivities = models.TextField(blank=True, null=True)
+    _shipping_address = models.TextField(blank=True, null=True)
     is_admin = models.BooleanField(default=False)
     status = models.CharField(
         max_length=10,
@@ -163,8 +177,29 @@ class GiftExchangeParticipant(BaseModel):
                 self.giftexchange,
             )
 
-    # class Meta:
-    #     unique_together = ['giftexchange', 'appuser']
+    @property
+    def likes(self):
+        if self._likes:
+            return self._likes
+        return self.appuser.userdefault.likes
+
+    @property
+    def dislikes(self):
+        if self._dislikes:
+            return self._dislikes
+        return self.appuser.userdefault.dislikes
+
+    @property
+    def allergies_or_sensitivities(self):
+        if self._allergies_or_sensitivities:
+            return self._allergies_or_sensitivities
+        return self.appuser.userdefault.allergies_or_sensitivities
+
+    @property
+    def shipping_address(self):
+        if self._shipping_address:
+            return self._shipping_address
+        return self.appuser.userdefault.shipping_address
 
     @classmethod
     def create(cls, appuser, giftexchange, is_admin=False, status='active'):

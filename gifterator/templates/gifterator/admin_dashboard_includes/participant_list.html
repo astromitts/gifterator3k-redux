@@ -63,3 +63,9 @@
 		{% endfor %}
 	</table>
 {% endif %}
+
+{% if pending_count %}
+<div>
+<div>Pending invitations: {{pending_count}}</div>
+</div>
+{% endif %}

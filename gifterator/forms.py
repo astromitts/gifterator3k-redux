@@ -16,7 +16,23 @@ from django.forms import (
 from gifterator.models import (
     GiftExchange,
     GiftExchangeParticipant,
+    UserDefault,
 )
+
+
+class UserDefaultForm(ModelForm):
+    class Meta:
+        model = UserDefault
+        fields = [
+            'likes',
+            'dislikes',
+            'allergies_or_sensitivities',
+            'shipping_address',
+        ]
+        widgets = {}
+        for field in fields:
+            widgets[field] = Textarea(attrs={'class': 'form-control', 'rows': 5})
+
 
 
 class ParticipantDetailsForm(ModelForm):
@@ -48,10 +64,10 @@ class ParticipantDetailsForm(ModelForm):
     class Meta:
         model = GiftExchangeParticipant
         fields = [
-            'likes',
-            'dislikes',
-            'allergies_or_sensitivities',
-            'shipping_address',
+            '_likes',
+            '_dislikes',
+            '_allergies_or_sensitivities',
+            '_shipping_address',
         ]
 
 

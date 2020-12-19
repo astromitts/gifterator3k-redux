@@ -73,8 +73,8 @@ class Command(BaseCommand):
             appuser__user__email__icontains='@example.com').all()
         for invitee in invitees:
             invitee.status = 'active'
-            invitee.likes = random.choice(FAKE_LIKES)
-            invitee.dislikes = random.choice(FAKE_DISLIKES)
-            invitee.allergies_or_sensitivities = random.choice(FAKE_ALLERGIES)
-            invitee.shipping_address = random.choice(FAKE_ADDRESSES)
+            invitee._likes = random.choice(FAKE_LIKES)
+            invitee._dislikes = random.choice(FAKE_DISLIKES)
+            invitee._allergies_or_sensitivities = random.choice(FAKE_ALLERGIES)
+            invitee._shipping_address = random.choice(FAKE_ADDRESSES)
             invitee.save()
