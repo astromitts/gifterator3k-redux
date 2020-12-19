@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from session_manager.models import UserToken, EmailLog
+from session_manager.models import UserToken, EmailLog, AppUser
 
 class UserTokenAdmin(admin.ModelAdmin):
     fields = [
-        'user',
+        'appuser',
         'token',
         'token_type',
         'expiration',
@@ -14,3 +14,4 @@ class UserTokenAdmin(admin.ModelAdmin):
 
 admin.site.register(UserToken, UserTokenAdmin)
 admin.site.register(EmailLog)
+admin.site.register(AppUser)

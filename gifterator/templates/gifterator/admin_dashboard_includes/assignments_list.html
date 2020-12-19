@@ -1,0 +1,11 @@
+<table class="table" id="table_assignment-list">
+    {% for assignment in assignment_list.all %}
+    <tr id="assignment_{{assignment.giver.email}}">
+        <td>{{assignment.giver.first_name}} {{assignment.giver.last_name}}</td>
+        <td>gives to
+        </td>
+        <td>{{assignment.reciever.first_name}}  {{assignment.reciever.last_name}}</td>
+        <td><a href="{% url 'gifterator_exchange_admin_sendmail' ex_uuid=giftexchange.uuid mail_type='send-assignment' %}?assignment_id={{assignment.pk}}" target="_blank">Send Email</a></td>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,8 +1,83 @@
+/* Variables */
 /* Bootstrap overrides */
 ol.breadcrumb {
   background-color: #FFFFFF;
 }
 
+.navbar-light {
+  background-color: #21618C !important;
+  color: #000000;
+}
+.navbar-light a {
+  font-family: "Lato", sans-serif;
+  color: #FFFFFF !important;
+  font-weight: bold;
+}
+
+.navbar {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  font-family: "Nunito", sans-serif;
+}
+.navbar a.navbar-brand {
+  font-family: "Nunito", sans-serif;
+  color: #FFFFFF !important;
+  font-weight: bold;
+  font-size: 2.8rem;
+}
+.navbar a.navbar-brand img {
+  margin-right: 0.3rem;
+  margin-top: -1rem;
+  width: 4rem;
+}
+.navbar a.nav-link {
+  font-size: 1.2rem;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  font-family: "Nunito", sans-serif;
+}
+
+img#header-image {
+  width: 2.7rem;
+  height: 2.7rem;
+}
+
+.btn-warning {
+  background-color: #F9E9BA;
+  border-color: #F9E9BA;
+}
+.btn-warning:hover {
+  background-color: #F9E9BA;
+  border-color: #F9E9BA;
+}
+.btn-primary {
+  background-color: #23618B;
+  border-color: #23618B;
+}
+.btn-primary:hover {
+  background-color: #23618B;
+  border-color: #23618B;
+}
+.btn-success {
+  background-color: #39884B;
+  border-color: #39884B;
+}
+.btn-success:hover {
+  background-color: #39884B;
+  border-color: #39884B;
+}
+.btn-danger {
+  background-color: #9C3640;
+  border-color: #9C3640;
+}
+.btn-danger:hover {
+  background-color: #9C3640;
+  border-color: #9C3640;
+}
+
+/* Django overrides */
+/* this make's Django's native form error list look like Bootstrap's danger alert */
 ul.errorlist {
   list-style-type: none;
   padding-inline-start: 0;
@@ -12,7 +87,6 @@ ul.errorlist {
   background-color: #F8D7DA;
 }
 
-/* Django overrides */
 span.helptext {
   display: block;
   font-style: italic;
@@ -23,6 +97,36 @@ span.helptext_required {
 }
 
 /* Session manager base styles */
+body {
+  font-family: "Lato", sans-serif;
+  font-weight: 300;
+  color: #3E474C;
+}
+body a {
+  color: #21618C;
+}
+
+h1, h2, h3, h4 {
+  color: #3E3C3C;
+  font-family: "Nunito", sans-serif;
+}
+
+.margin-top-1 {
+  margin-top: 1rem;
+}
+
+.margin-top-2 {
+  margin-top: 3rem;
+}
+
+.main-content {
+  margin-top: 1rem;
+}
+
+.default-hidden {
+  display: none;
+}
+
 .as-table {
   display: table;
   width: 100%;
@@ -39,6 +143,85 @@ span.helptext_required {
 
 .as-header {
   font-weight: bold;
+}
+
+.icon-text {
+  display: inline-flex;
+  vertical-align: top;
+  padding-top: 0.3rem;
+}
+.icon-text_alert {
+  padding-left: 1.5rem;
+}
+.icon-text-large {
+  padding-top: 0;
+  font-size: 1.5rem;
+}
+.icon-text-button {
+  padding-top: 0.4rem;
+  font-size: 1.2rem;
+  margin-left: 0.7rem;
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  background-size: cover;
+  display: inline-flex;
+}
+.icon-date {
+  background-image: url("vendors/miscellaneous-elements/png/039-calendar.png");
+}
+.icon-person {
+  background-image: url("vendors/miscellaneous-elements/png/008-user.png");
+}
+.icon-person-multi {
+  background-image: url("vendors/miscellaneous-elements/png/020-users.png");
+}
+.icon-add-person {
+  background-image: url("vendors/miscellaneous-elements/png/005-user.png");
+}
+.icon-location {
+  background-image: url("vendors/miscellaneous-elements/png/044-placeholder.png");
+}
+.icon-heart {
+  background-image: url("vendors/miscellaneous-elements/png/004-heart.png");
+}
+.icon-cart {
+  background-image: url("vendors/miscellaneous-elements/png/093-shopping cart.png");
+}
+.icon-giftbox {
+  background-image: url("img/giftbox.png");
+}
+.icon-giftbox-white {
+  background-image: url("img/giftbox-white.png");
+}
+.icon-success {
+  background-image: url("vendors/miscellaneous-elements/png/069-bell.png");
+}
+.icon-error {
+  background-image: url("vendors/miscellaneous-elements/png/076-megaphone.png");
+}
+.icon-warning {
+  background-image: url("vendors/miscellaneous-elements/png/099-shield.png");
+}
+.icon-info {
+  background-image: url("vendors/miscellaneous-elements/png/010-information.png");
+}
+
+.dashboardcard-description {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.dashboardcard-description_text {
+  background-color: #ECECEC;
+  padding: 1rem 0.1rem 1rem 1rem;
+}
+.dashboardcard-userinfo_text {
+  padding-left: 2.2rem;
+}
+.dashboardcard-userinfo_link {
+  padding-top: 1rem;
 }
 
 .email-preview {
@@ -71,6 +254,19 @@ form.inline input.submit {
   color: blue;
 }
 form.inline input.submit:hover {
+  text-decoration: underline;
+}
+
+.footer {
+  bottom: 0;
+  margin-top: 3rem;
+  width: 100%;
+  background-color: #21618C;
+  color: #FFFFFF;
+  padding: 2rem 0;
+}
+.footer a {
+  color: #FFFFFF;
   text-decoration: underline;
 }
 

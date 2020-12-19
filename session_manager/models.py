@@ -2,17 +2,54 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
-
+from django.utils import timezone
 from datetime import datetime, timedelta
-import pytz
+import uuid
 
+import pytz
 import hashlib
 import random
 import string
+import uuid
 
 from session_manager.utils import TimeDiff
+
+
+
+class AppUser(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4)
+    user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE)
+    privacy_policy_consent_stamp = models.DateTimeField(default=timezone.now)
+    eula_consent_stamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        if self.user:
+            return '<Registered AppUser: {} ({})>'.format(
+                self.uuid, self.user.email
+            )
+        else:
+            return '<Unregistered AppUser: {}>'.format(self.uuid)
+
+    @classmethod
+    def get_or_create(cls, user):
+        if user and cls.objects.filter(user=user).exists():
+            return cls.objects.get(user=user)
+        elif user:
+            new_instance = cls(user=user)
+        else:
+            new_instance = cls()
+        new_instance.save()
+        return new_instance
+
+    def update(self, likes, dislikes, allergies_or_sensitivities, shipping_address):
+        self.likes = likes
+        self.dislikes = dislikes
+        self.allergies_or_sensitivities = allergies_or_sensitivities
+        self.shipping_address = shipping_address
+        self.save()
 
 
 class SessionManager(models.Model):
@@ -29,13 +66,19 @@ class SessionManager(models.Model):
         return user_qs.exists()
 
     @classmethod
+    def get_user_by_email(cls, username):
+        """ Retrieve User if one with a matching username exists
+        """
+        return User.objects.filter(email__iexact=username).first()
+
+    @classmethod
     def get_user_by_username(cls, username):
         """ Retrieve User if one with a matching username exists
         """
         return User.objects.filter(username__iexact=username).first()
 
     @classmethod
-    def get_user_by_username_or_email(cls, username_or_email):
+    def get_user_by_username(cls, username_or_email):
         """ Retrieve User if one with a matching username exists
         """
         if '@' in username_or_email:
@@ -79,7 +122,7 @@ class SessionManager(models.Model):
         return User.objects.get(pk=pk)
 
     @classmethod
-    def register_user(cls, user, first_name=' ', last_name=' ', password=None,  username=None):
+    def complete_user_registration(cls, user, first_name=' ', last_name=' ', password=None,  username=None):
         """ Create a new User instance, set the password and return the User object
         """
         if not username:
@@ -88,7 +131,6 @@ class SessionManager(models.Model):
             user.username = username
         user.first_name = first_name
         user.last_name = last_name
-
         user.save()
         if password:
             user.set_password(password)
@@ -96,7 +138,7 @@ class SessionManager(models.Model):
         return user
 
     @classmethod
-    def create_user(cls, email, first_name=' ', last_name=' ', password=None,  username=None):
+    def create_and_register_user(cls, email, first_name=' ', last_name=' ', password=None,  username=None):
         """ Create a new User instance, set the password and return the User object
         """
         if not username:
@@ -111,6 +153,17 @@ class SessionManager(models.Model):
         if password:
             new_user.set_password(password)
             new_user.save()
+        return new_user
+
+    @classmethod
+    def preregister_user(cls, appuser, email):
+        new_user = User(
+            email=email,
+            username=username
+        )
+        new_user.save()
+        appuser.user = new_user
+        appuser.save()
         return new_user
 
     @classmethod
@@ -141,7 +194,7 @@ class UserToken(models.Model):
     """ Model for generating tokens that be used to login users without
         password or for resetting passwords
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    appuser = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     token = models.CharField(max_length=64, blank=True)
     token_type = models.CharField(
         max_length=20,
@@ -149,20 +202,23 @@ class UserToken(models.Model):
             ('reset', 'reset'),
             ('login', 'login'),
             ('registration', 'registration'),
-
+            ('invitation', 'invitation'),
         )
     )
     expiration = models.DateTimeField(blank=True, default=TimeDiff.fourtyeighthoursfromnow)
 
     @classmethod
-    def clean(cls, user, token_type):
-        cls.objects.filter(user=user, token_type=token_type).all().delete()
+    def clean(cls, appuser, token_type=None):
+        if token_type:
+            cls.objects.filter(token_type=token_type, appuser=appuser).delete()
+        else:
+            cls.objects.filter(appuser=appuser).delete()
 
     def _generate_token(self):
         """ Helper function to generate unique tokens
         """
         token_base = '{}-{}-{}'.format(
-            self.user.email,
+            self.appuser.uuid,
             datetime.now(),
             ''.join(random.choices(string.ascii_uppercase + string.digits, k = 60))
         )
@@ -181,11 +237,14 @@ class UserToken(models.Model):
         """ Get the URL path expected by the login and password reset views
         """
         if self.token_type == 'login':
-            return '{}?token={}&user={}'.format(reverse('session_manager_login'), self.token, self.user.username)
-        elif self.token_type == 'registration':
-            return '{}?token={}&user={}'.format(reverse('session_manager_register'), self.token, self.user.username)
+            return '{}?token={}&user={}'.format(
+                reverse('session_manager_login'), self.token, self.appuser.uuid)
+        elif self.token_type in ['registration', 'invitation']:
+            return '{}?token={}&user={}'.format(
+                reverse('session_manager_register'), self.token, self.appuser.uuid)
         else:
-            return '{}?token={}&user={}'.format(reverse('session_manager_token_reset_password'), self.token, self.user.username)
+            return '{}?token={}&user={}'.format(
+                reverse('session_manager_token_reset_password'), self.token, self.appuser.uuid)
 
     @property
     def link(self):
@@ -194,18 +253,21 @@ class UserToken(models.Model):
         return '{}{}'.format(settings.HOST, self.path)
 
     def __str__(self):
-        return 'UserToken Object: {} // User: {} // type: {} // expires: {}'.format(self.pk, self.user.email, self.token_type, self.expiration)
+        return 'UserToken Object: {} // User: {} // type: {} // expires: {}'.format(self.pk, self.appuser.uuid, self.token_type, self.expiration)
 
     @classmethod
-    def get_token(cls, token, username, token_type):
+    def get_token(cls, token, appuser, token_type=None, token_type__in=None):
         """ Retrieve a token that matches the given username and type if it exists
             Returns a tuple:
                 (object: UserToken if found, string: error message if no token found)
         """
-        user = SessionManager.get_user_by_username(username)
-        if not user:
-            return (None, 'User matching username not found.')
-        token = cls.objects.filter(user=user, token=token, token_type=token_type).first()
+        if token_type:
+            token = cls.objects.filter(
+                appuser=appuser, token=token, token_type=token_type).first()
+        else:
+            token = cls.objects.filter(
+                appuser=appuser, token=token, token_type__in=token_type__in).first()
+
         if not token:
             return (None, 'Token not found.')
         else:

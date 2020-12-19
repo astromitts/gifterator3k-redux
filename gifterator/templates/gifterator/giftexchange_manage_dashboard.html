@@ -1,0 +1,130 @@
+{% extends 'base/project_base.html' %}
+{% load static %}
+
+{% block extra_js %}
+	<script type="text/javascript" src="{% static 'js/message.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/admin-dashboard.js' %}"></script>
+{% endblock %}
+
+{% block page_content %}
+	<input type="hidden" id="post-url" value="{% url 'gifterator_exchange_admin_dashboard_api' ex_uuid=giftexchange.uuid %}" />
+	<div class="row">
+		<div class="col" id="js-messages-col">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h2>
+				<div class="icon icon-giftbox"></div>
+				<div class="icon-text">Gift Exchange Details</div>
+			</h2>
+			<div id="details-form">
+				{% include 'session_manager/generic_form.html' with form=exchange_details_form submit_id='update-details' %}
+			</div>
+		</div>
+		<div class="col">
+			<h2>
+				<div class="icon icon-person-multi"></div>
+				<div class="icon-text">Participants</div>
+			</h2>
+			<div id="participant-list" class="default-hidden">
+					{% include 'gifterator/admin_dashboard_includes/participant_list.html' %}
+			</div>
+			<div id="notify-participants" class="default-hidden">
+				<form method="POST">
+					{% csrf_token %}
+					<input 
+						type="hidden" 
+						id="id_js_target" 
+						name="js_target" 
+						value="notify-participants" />
+					<input 
+						type="submit" 
+						id="id_notify-participants" 
+						name="notify-participants"
+						class="btn btn-danger form-control js-assignment-control"
+						value="Notify Participants"
+						/>
+				</form>
+				<span class="helptext">Once you notify participants, you can no longer edit, add, or remove participants or reset assignments.</span>
+			</div>
+			<div id="assignment-list" class="default-hidden">
+				{% include 'gifterator/admin_dashboard_includes/assignments_list.html' %}
+			</div>
+			<div id="notify-participants-alert" class="default-hidden">
+				<div class="alert alert-warning">
+					Participants have already been notified of their gift assignments. You can no longer add, edit or remove people from this gift exchange or change the assignments.
+				</div>
+			</div>
+			<div>
+				<form method="POST">
+					{% csrf_token %}
+					<input 
+						type="hidden" 
+						id="id_js_target" 
+						name="js_target" 
+						value="set-assignments" />
+					<input 
+						type="submit" 
+						id="id_set-assignments" 
+						name="set-assignments"
+						class="btn btn-success form-control js-assignment-control default-hidden"
+						{% if assignment_list.count > 0 %}
+							value="Re-set Assignments"
+						{% else %}
+							value="Set Assignments"
+						{% endif %}
+						/>
+				</form>
+			</div>
+				<div>
+					<form method="POST">
+						{% csrf_token %}
+						<input 
+							type="hidden" 
+							id="id_js_target" 
+							name="js_target" 
+							value="lock-assignments" />
+						<input 
+							type="submit" 
+							id="id_lock-assignments" 
+							name="lock-assignments"
+							class="btn btn-warning form-control js-assignment-control default-hidden"
+							value="Lock Assignments"
+							/>
+					</form>
+				</div>
+				<div>
+					<form method="POST">
+						{% csrf_token %}
+						<input 
+							type="hidden" 
+							id="id_js_target" 
+							name="js_target" 
+							value="unset-assignments" />
+						<input 
+							type="submit" 
+							id="id_unset-assignments" 
+							name="unset-assignments"
+							class="btn btn-primary form-control js-assignment-control default-hidden"
+							value="Un-do Assignments"
+							/>
+					</form>
+				</div>
+				<div id="notify-participant-count" class="default-hidden">
+					<div class="alert alert-warning">
+						You must have at least 3 active participants to set gift assignments.
+					</div>
+				</div>
+		</div>
+	</div>
+	<div class="row" id="id_search-users" class="default-hidden">
+		<div class="col">
+			<h3>Search for Participants</h3>
+			{% include 'session_manager/generic_form.html' with form=participant_email_form submit_text='Search' submit_id='email-search' %}
+			<div id="search-results">
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -16,7 +16,7 @@ from session_manager.forms import (
     CreateUserForm,
     LoginEmailForm,
     LoginPasswordForm,
-    RegistrationLinkForm,
+    RegistrationEmailForm,
     ResetPasswordForm,
     UserProfileUsernameForm,
     UserProfileEmailUsernameForm,
@@ -24,7 +24,8 @@ from session_manager.forms import (
 )
 
 from session_manager.mailer import SessionManagerEmailer
-from session_manager.models import SessionManager, UserToken
+from session_manager.models import AppUser, SessionManager, UserToken
+
 
 class CreateUserView(View):
     """ Views for a new user registration
@@ -32,35 +33,44 @@ class CreateUserView(View):
     def setup(self, request, *args, **kwargs):
         super(CreateUserView, self).setup(request, *args, **kwargs)
         self.template = loader.get_template('session_manager/register.html')
+
+        if request.GET.get('token'):
+            self.appuser = AppUser.objects.get(uuid=request.GET['user'])
+            self.registration_token, self.token_error_message = UserToken.get_token(
+                token=request.GET['token'],
+                appuser=self.appuser,
+                token_type__in=['registration', 'invitation']
+            )
+            self.registration_type = self.registration_token.token_type
+            self.invitations = self.appuser.giftexchangeparticipant_set
+        else:
+            self.appuser = None
+            self.registration_token = None
+            self.registration_type = 'onsite'
+
         self.context = {}
 
-    def get(self, request, *args, **kwargs):
-        if request.GET.get('token') and request.GET.get('user'):
-            registration_token, token_error_message = UserToken.get_token(
-                token=request.GET['token'],
-                username=request.GET['user'],
-                token_type='registration'
-            )
-            if not registration_token:
+    def get(self, request,    *args, **kwargs):
+        if self.registration_type != 'onsite':
+            if not self.registration_token:
                 messages.error(request, token_error_message)
                 return redirect(reverse('session_manager_login'))
-            elif not registration_token.is_valid:
+            elif not self.registration_token.is_valid:
                 registration_token.delete()
                 messages.error(request, 'Registration link invalid or expired')
                 return redirect(reverse('session_manager_login'))
+            elif self.registration_token.token_type == 'invitation':
+                form = CreateUserForm(
+                    registration_from_invitation=True,
+                    initial={'appuser_uuid': self.appuser.uuid}
+                )
             else:
-                if settings.MAKE_USERNAME_EMAIL:
-                    initial = {
-                        'email': registration_token.user.email,
-                        'username': registration_token.user.username
-                    }
-                else:
-                    initial = {
-                        'email': registration_token.user.email,
-                    }
-                form = CreateUserForm(initial=initial)
+                form = CreateUserForm(
+                    registration_from_invitation=False,
+                    initial={'appuser_uuid': self.appuser.uuid}
+                )
         else:
-            form = LoginEmailForm()
+            form = RegistrationEmailForm()
         self.context.update({
             'form': form,
         })
@@ -69,25 +79,44 @@ class CreateUserView(View):
     def post(self, request, *args, **kwargs):
         if 'password' in request.POST:
             form = CreateUserForm(request.POST)
-            if form.is_valid():
-                user = SessionManager.get_user_by_username(request.POST['email'])
+            if not form.errors and not form.non_field_errors():
                 if not settings.MAKE_USERNAME_EMAIL:
                     username = request.POST['username']
                 else:
                     username = request.POST['email']
-                SessionManager.register_user(
-                    user,
-                    username=username,
-                    password=request.POST['password'],
-                    first_name=request.POST['first_name'],
-                    last_name=request.POST['last_name']
-                )
+                self.appuser = AppUser.objects.get(uuid=request.POST['appuser_uuid'])
+                if self.appuser.user:
+                    user = SessionManager.complete_user_registration(
+                        user=self.appuser.user,
+                        username=username,
+                        password=request.POST['password'],
+                        first_name=request.POST['first_name'],
+                        last_name=request.POST['last_name']
+                    )
+                else:
+                    user = SessionManager.create_and_register_user(
+                        email=request.POST['email'],
+                        username=username,
+                        password=request.POST['password'],
+                        first_name=request.POST['first_name'],
+                        last_name=request.POST['last_name']
+                    )
+                    self.appuser.user = user
+                    self.appuser.save()
+                    for invitation in self.invitations.all():
+                        invitation.status = 'invited'
+                        invitation.appuser = self.appuser
+                        invitation.save()
                 messages.success(request, 'Registration complete! Please log in to continue.')
-                UserToken.objects.filter(user=user, token_type='registration').all().delete()
+                UserToken.clean(appuser=self.appuser)
                 return redirect(reverse('session_manager_login'))
             else:
+                flattened_data = {field: str(value) for field, value in request.POST.items()}
                 self.context.update({
-                    'form': form,
+                    'form': CreateUserForm(
+                        registration_from_invitation=self.registration_token.token_type=='invitation',
+                        initial=flattened_data
+                    ),
                 })
                 return HttpResponse(self.template.render(self.context, request))
         else:
@@ -100,11 +129,15 @@ class CreateUserView(View):
                     )
                     messages.error(request, error)
                 else:
-                    user = SessionManager.get_user_by_username(request.POST['email'])
-                    if not user:
-                        user = SessionManager.create_user(request.POST['email'])
-                    UserToken.clean(user=user, token_type='registration')
-                    token = UserToken(user=user, token_type='registration')
+                    appuser = AppUser()
+                    appuser.save()
+                    user = SessionManager.preregister_user(
+                        appuser=appuser,
+                        email=request.POST['email']
+                    )
+
+                    UserToken.clean(appuser=user.appuser, token_type='registration')
+                    token = UserToken(appuser=user.appuser, token_type='registration')
                     token._generate_token()
                     token.save()
                     mailer = SessionManagerEmailer()
@@ -167,7 +200,7 @@ class LoginUserView(View):
             self.context.update({'login_stage': self.login_stage})
             form = LoginEmailForm(request.POST)
             if form.is_valid():
-                user = SessionManager.get_user_by_username_or_email(request.POST['email'])
+                user = SessionManager.get_user_by_username(request.POST['email'])
                 if not user:
                     messages.error(request, 'Could not find account with that email address.')
                 elif not user.password:
@@ -181,7 +214,7 @@ class LoginUserView(View):
                     )
                     self.template = loader.get_template('session_manager/default.html')
                     self.context.update({
-                        'form': RegistrationLinkForm(initial={'email': user.email}),
+                        'form': RegistrationEmailForm(initial={'email': user.email}),
                         'submit_text': 'Re-send Registration Link',
                         'form_action': reverse('session_manager_send_registration_link'),
                         'email': user.email,
@@ -226,7 +259,7 @@ class LoginUserView(View):
 class SendRegistrationLink(View):
     def post(self, request, *args, **kwargs):
         context = {}
-        form = RegistrationLinkForm(request.POST)
+        form = RegistrationEmailForm(request.POST)
         if form.is_valid():
             user = SessionManager.get_user_by_username(request.POST['email'])
             UserToken.clean(
@@ -374,7 +407,11 @@ class Profile(View):
     def get(self, request, *args, **kwargs):
         template = loader.get_template('session_manager/profile.html')
         context = {
-            'show_username': not settings.MAKE_USERNAME_EMAIL
+            'show_username': not settings.MAKE_USERNAME_EMAIL,
+            'breadcrumbs': [
+                ('Gift Exchanges', reverse('gifterator_dashboard')),
+                ('Profile', None)
+            ]
         }
         return HttpResponse(template.render(context, request))
 
@@ -383,6 +420,11 @@ class UpdateProfileView(View):
     def setup(self, request, *args, **kwargs):
         super(UpdateProfileView, self).setup(request, *args, **kwargs)
         self.template = loader.get_template('session_manager/default.html')
+        self.context = {}
+        self.context['breadcrumbs'] = [
+            ('Profile', reverse('session_manager_profile')),
+            ('Profile Settings', None)
+        ]
         if settings.MAKE_USERNAME_EMAIL:
             self.form = UserProfileEmailUsernameForm
         else:
@@ -399,10 +441,10 @@ class UpdateProfileView(View):
             initial['username'] = self.request.user.username
 
         form = self.form(initial=initial)
-        context = {
+        self.context.update({
             'form': form,
-        }
-        return HttpResponse(self.template.render(context, request))
+        })
+        return HttpResponse(self.template.render(self.context, request))
 
     def post(self, request, *args, **kwargs):
         form = self.form(request.POST)
@@ -422,7 +464,7 @@ class UpdateProfileView(View):
             messages.success(request, 'Profile updated.')
             return redirect(reverse('session_manager_profile'))
         else:
-            context = {
+            self.context.update({
                 'form': form,
-            }
-            return HttpResponse(self.template.render(context, request))
+            })
+            return HttpResponse(self.template.render(self.context, request))

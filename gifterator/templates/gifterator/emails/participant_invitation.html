@@ -1,0 +1,51 @@
+{% extends 'session_manager/emails/email_base.html' %}
+{% load apptags %}
+
+{% block email_body %}
+	<p>
+		You have been invited to join a gift exchange on Gifterator3k by {{giftexchange.created_by.get_full_name}}
+	</p>
+	<p>
+		{% if existing_user %}
+		Log in to your <a href="{{host}}{% url 'session_manager_login' %}" target="_blank">Gifterator3k account</a> to accept!
+		{% else %}
+			To accept the invitation, click the registration link below. It expires in 48 hours.
+			<br />
+			<a href="{{token.link}}"><button>Complete registration</button></a>
+		{% endif %}
+	</p>
+	<p>Gift Exchange Details:</p>
+	<p><strong>{{giftexchange.title}}</strong></p>
+	{% if giftexchange.description %}
+		<p>"{{giftexchange.description}}"</p>
+	{% endif %}
+	<p>
+	<div style="display: table">
+		<div style="display: table-row">
+			<div style="display: table-cell; width: 160px;">Date: </div>
+			<div style="display: table-cell;">{{giftexchange.date}}</div>
+		</div>
+		<div style="display: table-row">
+			<div style="display: table-cell; width: 160px;">Location: </div>
+			<div style="display: table-cell">{{giftexchange.location}}</div>
+		</div>
+		<div style="display: table-row">
+			<div style="display: table-cell; width: 160px;">Spending limit: </div>
+			<div style="display: table-cell"> ${{giftexchange.spending_limit}}</div>
+		</div>
+		{% comment %}
+		<div style="display: table-row">
+			<div style="display: table-cell">Can I ship my gift? </div>
+			<div style="display: table-cell">
+				{% if giftexchange.ship_gifts_allowed %}
+					Yes!
+				{% else %}
+					No
+				{% endif %}
+			</div>
+		</div>
+		{% endcomment %}
+	</div>
+	<br /><br />
+	Thanks for using Gifterator3k!
+{% endblock %}

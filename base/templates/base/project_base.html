@@ -1,4 +1,4 @@
-{% load static %}
+{% load static apptags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +17,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" > </script>
 	<script src="{% static 'vendors/bootstrap/js/bootstrap.min.js' %}"></script>
 	{% block extra_js %}{% endblock %}
+	{% block form_js %} {% endblock %}	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 	<link href="{% static 'css/base.css' %}" rel="stylesheet">
 	{% block extra_css %}{% endblock %}
 </head>
@@ -25,15 +28,13 @@
 	{% block header_nav %}
 		<nav class="navbar navbar-expand-sm bg-light navbar-light">
 			<div class="container">
-				<a class="navbar-brand float-left" href="{% url 'session_manager_profile' %}">{{APP_NAME}}
+				<a class="navbar-brand float-left" href="{% url 'gifterator_dashboard' %}">
+					<img src="{% static 'site-images/giftbox-icon-text.png' %}" />{{APP_NAME}}
 				</a>
 				<ul class="navbar-nav">
 					{% if request.user.is_authenticated %}
 						<li class="nav-item">
 							<a href="{% url 'session_manager_profile' %}" class="nav-link">Logged in as: {{request.user.username}}</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'session_manager_logout' %}">Log Out</a>
 						</li>
 					{% else %}
 						<li class="nav-item">
@@ -63,14 +64,17 @@
 		</div>
 	{% endif %}
 	<div class="container">
-		<div id="main-content">
+		<div id="main-content" class="main-content">
 		{% block messages %}
 			{% if messages %}
 				<div class="row">
 					<div class="col">
 					    {% for message in messages %}
-					    <div class="alert alert-{% if message.level_tag == 'error'%}danger{% else %}{{message.level_tag}}{% endif %}">
-						 	{{message|safe}}
+					    <div class="alert alert-{% if message.level_tag == 'error'%}danger{% else %}{{message.level_tag}}{% endif %} alert-dismissible fade show" role="alert">
+						 	<div class="icon icon-{{message.level_tag}}"></div>
+						 	<div class="icon-text icon-text_alert">{{message|safe}}</div>
+						 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					 	<span aria-hidden="true">&times;</span>
 						</div>
 					    {% endfor %}
 					</div>
@@ -83,6 +87,21 @@
 					{% include 'session_manager/emails/app_email_preview.html' with email=show_email %}
 				{% endif %}
 			{% endblock %}
+		</div>
+	</div>
+	<div class="footer">
+		<div class="row">
+			<div class="col"></div>
+			<div class="col">
+				<a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+				<br />
+				<a href="{% url 'eula' %}">End User License Agreement</a>
+			</div>
+			<div class="col">
+				<div>Additional resources:</div>
+				<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+			</div>
+			<div class="col"></div>
 		</div>
 	</div>
 </body>

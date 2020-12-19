@@ -1,0 +1,38 @@
+
+<div class="dashboardcard_title">{{exchange.title}}</div>
+<div class="dashboardcard_subtitle mb-2 text-muted">
+	Created by {{exchange.created_by.get_full_name}}
+</div>
+
+{% if exchange.description %}
+	<div class="dashboardcard-description as-table">
+		<div class="dashboardcard-description_text as-row">
+			<div class=" as-cell">
+				<div class="icon icon-heart" style="margin: .5rem;"></div>
+			</div>
+			<div class="icon-text font-italic as-cell">	
+				"{{exchange.description}}
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<div class="dashboardcard_subtitle mb-2 text-muted">
+	<div class="icon icon-date"></div>
+	<div class="icon-text">
+		{{exchange.date}}
+	</div>
+</div>
+<div class="dashboardcard_subtitle mb-2 text-muted">
+	<div class="icon icon-cart"></div>
+	<div class="icon-text">
+		Limit ${{exchange.spending_limit}}
+	</div>
+</div>
+
+<div class="dashboardcard_subtitle mb-2 text-muted">
+	<div class="icon icon-location"></div>
+	<div class="icon-text">
+		{{exchange.location}}
+	</div>
+</div>

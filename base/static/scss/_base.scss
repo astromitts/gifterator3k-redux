@@ -1,20 +1,115 @@
+/* Variables */
+
+$navbar-font: 'Nunito', sans-serif;
+$app-primary: #21618C;
+
+$bootstrap-warning: #F9E9BA;
+$bootstrap-success: #39884B;
+$bootstrap-primary: #23618B;
+$bootstrap-danger: #9C3640;
+
+$body-font-color: #3E474C;
+$body-header-color: #3E3C3C;
+$body-font: 'Lato', sans-serif;
+$body-font-weight: 300;
+
+
+
 /* Bootstrap overrides */
 
 ol.breadcrumb {
 	background-color: #FFFFFF;
 }
 
+
+.navbar-light {
+	background-color: $app-primary !important;
+	color: #000000;
+	a {
+		font-family: $body-font;
+		color: #FFFFFF !important;
+		font-weight: bold;
+	}
+
+}
+
+.navbar {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	font-family: $navbar-font;
+	a.navbar-brand {
+		font-family: $navbar-font;
+		color: #FFFFFF !important;
+		font-weight: bold;
+		font-size: 2.8rem;
+		img {
+			margin-right: .3rem;
+			margin-top: -1rem;
+			width: 4rem;
+		}
+	}
+	a.nav-link {
+		font-size: 1.2rem;
+	}
+} 
+
+.navbar-light .navbar-nav .nav-link {
+	font-family: $navbar-font;
+}
+
+img#header-image{
+	width: 2.7rem;
+	height: 2.7rem;	
+}
+
+.btn {
+	&-warning {
+		background-color: $bootstrap-warning;
+		border-color: $bootstrap-warning;
+		&:hover {
+			background-color: #F9E9BA;
+			border-color: #F9E9BA;
+		}
+	}
+	&-primary {
+		background-color: $bootstrap-primary;
+		border-color: $bootstrap-primary;
+		&:hover {
+			background-color: $bootstrap-primary;
+			border-color: $bootstrap-primary;
+		}
+	}
+	&-success {
+		background-color: $bootstrap-success;
+		border-color: $bootstrap-success;
+		&:hover {
+			background-color: $bootstrap-success;
+			border-color: $bootstrap-success;
+		}
+	}
+	&-danger {
+		background-color: $bootstrap-danger;
+		border-color: $bootstrap-danger;
+		&:hover {
+			background-color: $bootstrap-danger;
+			border-color: $bootstrap-danger;
+		}
+	}
+}
+
+
+/* Django overrides */
+
+
+/* this make's Django's native form error list look like Bootstrap's danger alert */
 ul.errorlist {
 	list-style-type: none;
     padding-inline-start: 0;
     padding: 1rem;
     border-radius: 8px;
-    border: 1px solid #F5C6CB;
+    border: 1px solid #F5C6CB; 
     background-color: #F8D7DA;
 }
-
-
-/* Django overrides */
 
 span.helptext{
 	display: block;
@@ -27,6 +122,35 @@ span.helptext{
 
 
 /* Session manager base styles */
+body {
+	font-family: $body-font;
+	font-weight: $body-font-weight;
+	color: $body-font-color;
+	a {
+		color: $app-primary;
+	}
+}
+
+h1, h2, h3, h4 {
+	color: $body-header-color;
+	font-family: $navbar-font;
+}
+
+.margin-top-1 {
+	margin-top: 1rem;
+}
+
+.margin-top-2 {
+	margin-top: 3rem;
+}
+
+.main-content {
+	margin-top: 1rem;
+}
+
+.default-hidden {
+	display: none;
+}
 
 .as-table {
 	display: table;
@@ -44,6 +168,94 @@ span.helptext{
 
 .as-header {
 	font-weight: bold;
+}
+
+.icon-text {
+    display: inline-flex;
+    vertical-align: top;
+    padding-top: .3rem;
+    &_alert {
+    	padding-left: 1.5rem;
+    }
+    &-large {
+    	padding-top: 0;
+    	font-size: 1.5rem;
+    }
+    &-button {
+    	padding-top: .4rem;
+    	font-size: 1.2rem;
+    	margin-left: .7rem;
+    }
+}
+.icon {
+	width: 2rem;
+    height: 2rem;
+    background-size: cover;
+    display: inline-flex;
+	&-date {
+		background-image: url("vendors/miscellaneous-elements/png/039-calendar.png")
+	}
+	&-person {
+		background-image: url("vendors/miscellaneous-elements/png/008-user.png")
+	}
+	&-person-multi {
+		background-image: url("vendors/miscellaneous-elements/png/020-users.png")
+	}
+	&-add-person {
+		background-image: url("vendors/miscellaneous-elements/png/005-user.png")
+	}
+	&-location {
+		background-image: url("vendors/miscellaneous-elements/png/044-placeholder.png")
+	}
+	&-heart {
+		background-image: url("vendors/miscellaneous-elements/png/004-heart.png")
+	}
+	&-cart {
+		background-image: url("vendors/miscellaneous-elements/png/093-shopping cart.png")
+	}
+	&-giftbox {
+		background-image: url("img/giftbox.png")
+	}
+	&-giftbox-white {
+		background-image: url("img/giftbox-white.png")
+	}
+	&-success {
+		background-image: url("vendors/miscellaneous-elements/png/069-bell.png")
+	}
+	&-error {
+		background-image: url("vendors/miscellaneous-elements/png/076-megaphone.png")
+	}
+	&-warning {
+		background-image: url("vendors/miscellaneous-elements/png/099-shield.png")
+	}
+	&-info {
+		background-image: url("vendors/miscellaneous-elements/png/010-information.png")
+	}
+}
+
+.dashboardcard {
+	&_title {
+
+	}
+	&_subtitle {
+
+	}
+	&-description {
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+		&_text {
+			background-color: #ECECEC;
+			padding: 1rem .1rem 1rem 1rem;
+		}
+	}
+	&-userinfo {
+		&_text {
+			padding-left: 2.2rem;
+		}
+		&_link {
+			padding-top: 1rem;
+		}
+	}
 }
 
 .email-preview {
@@ -76,5 +288,18 @@ form.inline {
 		&:hover {
 			text-decoration: underline;
 		}
+	}
+}
+
+.footer {
+	bottom: 0;
+	margin-top: 3rem;
+	width: 100%;
+	background-color: $app-primary;
+	color: #FFFFFF;
+	padding: 2rem 0;
+	a {
+		color: #FFFFFF;
+		text-decoration: underline;
 	}
 }

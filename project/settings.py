@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'session_manager',
     'base',
+    'gifterator',
 ]
 
 MIDDLEWARE = [
@@ -126,26 +127,28 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'base/static')
 
 # Session Manager Settings
-LOGIN_SUCCESS_REDIRECT = 'session_manager_profile'
+LOGIN_SUCCESS_REDIRECT = 'gifterator_dashboard'
 PW_RESET_SUCCESS_REDIRECT = 'session_manager_profile'
 DEFAULT_ERROR_TEMPLATE = 'session_manager/error.html'
-MAKE_USERNAME_EMAIL = False
+MAKE_USERNAME_EMAIL = True
 
 # Middleware authentication settings
-MIDDLEWARE_DEBUG = False
+MIDDLEWARE_DEBUG = True
 AUTHENTICATION_EXEMPT_VIEWS = [
     'session_manager_register',
     'session_manager_login',
     'session_manager_token_reset_password',
     'session_manager_send_reset_password_link',
     'session_manager_send_registration_link',
+    'privacy_policy',
+    'eula',
 ]
 AUTHENTICATION_REQUIRED_REDIRECT = 'session_manager_login'
 
 # display settings
 # APP_NAME DEPRECATED: Use session_manager.context_processors.py for this setting
 APP_NAME = None
-DISPLAY_AUTH_SUCCESS_MESSAGES = True
+DISPLAY_AUTH_SUCCESS_MESSAGES = False
 
 # email settings
 LOG_EMAILS = True

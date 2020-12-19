@@ -7,9 +7,32 @@
 				{{form.as_p}}
 			{% endif %}
 			<tr>
-				<td colspan="100%"><input type="submit" class="btn btn-primary form-control" value="{% if submit_text %}{{submit_text}}{% else %}Submit{% endif %}" /></td>
+				<td colspan="100%">
+					<input 
+						type="submit" 
+						class="btn btn-primary form-control" 
+						value="{% if submit_text %}{{submit_text}}{% else %}Submit{% endif %}"
+						id="id_{% if submit_id %}{{submit_id}}{% else %}submit{% endif %}"
+						name="{% if submit_id %}{{submit_id}}{% else %}submit{% endif %}"
+					/>
+				</td>
 			</tr>
 		</table>
 		</form>
 	{% endif %}
 {% endblock %}
+
+
+{% block form_js %}
+<script>
+	$(document).ready(function(){
+		$(function() {
+			$( ".datepicker" ).datepicker({
+				changeMonth: true,
+				changeYear: true,
+				dateFormat: 'yy-mm-dd',
+			});
+		});
+	});
+ </script>
+ {% endblock %}

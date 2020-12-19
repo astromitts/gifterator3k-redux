@@ -1,0 +1,5 @@
+{% extends 'base/project_base.html' %}
+{% block page_content %}
+	<p>Enter an email address to invite some one new to your gift exchange</p>
+	{% include 'session_manager/generic_form.html' with form=form submit_text='Invite' %}
+{% endblock %}

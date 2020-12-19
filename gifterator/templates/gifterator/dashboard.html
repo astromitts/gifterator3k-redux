@@ -1,0 +1,121 @@
+{% extends 'base/project_base.html' %}
+{% load apptags %}
+{% block page_content %}
+	<div class="row">
+		<div class="col">
+			<a href="{% url 'gifterator_create_giftexchange' %}" class="btn btn-success">
+				<div class="icon icon-giftbox-white"></div>
+				<div class="icon-text icon-text-button">New Gift Exchange</div>
+			</a>
+		</div>
+	</div>
+
+	<div class="row margin-top-1">
+		<div class="col">
+			<h2>Current Gift Exchanges</h2>
+		</div>
+	</div>
+	<div class="row">
+	{% for pg_ex in participant_exchanges %}
+		{% with pg_ex.giftexchange as exchange %}
+		<div class="col">
+			<div class="dashboardcard" style="width: 18rem;">
+
+				{% include 'gifterator/dashboard-includes/exchange-details.html' %}
+
+				{% if exchange.participants_notified %}
+					<div class="dashboardcard-userinfo">
+						{% with address=pg_ex.giver_assignment.reciever.shipping_address name=pg_ex.giver_assignment.reciever.user.first_name full_name=pg_ex.giver_assignment.reciever.user.get_full_name reciever=pg_ex.giver_assignment.reciever %}
+							<div>
+								<div class="icon icon-person"></div>
+								<div class="icon-text icon-text-large">
+									Assignment
+								</div>
+							</div>
+							<div class="dashboardcard-userinfo_text">
+								<p class="font-weight-bold">
+									You are getting a gift for {{full_name}}!
+								</p>
+								<p>{{reciever|display_likes}}</p>
+								<p>{{reciever|display_dislikes}}</p>
+								<p>{{reciever|display_allergies}}</p>
+								{% if exchange.ship_gifts_allowed %}
+									<p>You can send {{name}}'s gift to:<br />
+									{{address}}</p>
+								{% endif %}
+								<p>
+								Please get a gift by {{exchange.date}} costing no more than ${{exchange.spending_limit}}
+								</p>
+							</div>
+							
+						{% endwith %}
+					</div>
+				{% else %}
+				<div class="alert alert-warning">
+					Assignments have not been given yet for this exchange. There is still time to edit your information.
+					
+					<div class="margin-top-1">
+						<div class="icon icon-person"></div>
+						<div class="icon-text icon-text-large">
+							Your Details
+						</div>
+					</div>
+					<div class="dashboardcard-userinfo_text">
+						I like: {{pg_ex.likes|display_user_information}}<br />
+						I dislike: {{pg_ex.dislikes|display_user_information}}<br />
+						Allergies/sensitivities: {{pg_ex.allergies_or_sensitivities|display_user_information}}<br />
+						Shipping address: {{pg_ex.shipping_address|display_user_information}}<br />
+						<div class="dashboardcard-userinfo_link">
+						<a href="{% url 'gifterator_exchange_participant_detail' ex_uuid=exchange.uuid %}">Edit  my information</a>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+		{% endwith %}
+	{% endfor %}	
+	</div>
+
+	{% if invited_exchanges %}
+		<div class="row margin-top-2">
+			<div class="col">
+				<h2>Gift Exchanges Invitations</h2>
+			</div>
+		</div>
+		<div class="row">
+		{% for exchange in invited_exchanges %}
+			<div class="col">
+				<div class="dashboardcard" style="width: 18rem;">
+					{% include 'gifterator/dashboard-includes/exchange-details.html' %}
+					<a href="{% url 'gifterator_exchange_handle_invitation' ex_uuid=exchange.uuid action='accept' %}" class="btn btn-primary card-link">Accept</a>
+					<a href="{% url 'gifterator_exchange_handle_invitation' ex_uuid=exchange.uuid action='decline' %}" class="btn btn-warning card-link">Decline</a>
+				</div>
+			</div>
+		{% endfor %}	
+		</div>
+	{% endif %}
+
+	{% if admin_exchanges %}
+		<div class="row margin-top-2">
+			<div class="col">
+				<h2>Gift Exchanges Admin</h2>
+			</div>
+		</div>
+		<div class="row">
+		{% for exchange in admin_exchanges %}
+			<div class="col">
+				<div class="dashboardcard" style="width: 18rem;">
+					{% include 'gifterator/dashboard-includes/exchange-details.html' %}
+
+					<div class="dashboardcard-userinfo_text">
+						<div class="dashboardcard-userinfo_link">
+							<a href="{% url 'gifterator_exchange_admin_dashboard' ex_uuid=exchange.uuid %}">Manage</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}	
+		</div>
+	{% endif %}
+{% endblock %}

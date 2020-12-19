@@ -2,19 +2,34 @@
 {% block page_content %}
 
 	<h1>Welcome!</h1> 
-	<div>You are logged in as</div>
-	<ul>
-		{% if show_username %}
-			<li><b>Username:</b> {{request.user.username}}</li>
-		{% endif %}
-		<li><b>First name:</b> {{request.user.first_name}}</li>
-		<li><b>Last name:</b> {{request.user.last_name}}</li>
-		<li><b>Email:</b> {{request.user.email}}</li>
-	</ul>
+	<div class="row">
+		<div class="col">
+			<div><a href="{% url 'session_manager_profile_reset_password' %}">Reset password</a></div>
+			<div><a href="{% url 'session_manager_logout' %}">Log out</a></div>
+		</div>
+		<div class="col">
+			<div>You are logged in as:</div>
+			<ul>
+				{% if show_username %}
+					<li><b>Username:</b> {{request.user.username}}</li>
+				{% endif %}
+				<li><b>First name:</b> {{request.user.first_name}}</li>
+				<li><b>Last name:</b> {{request.user.last_name}}</li>
+				<li><b>Email:</b> {{request.user.email}}</li>
+			</ul>
+			<a href="{% url 'session_manager_profile_update' %}" class="btn btn-primary float-right">Update Profile</a>
+		</div>
+		<div class="col">
+			<div>Your default gift exchange settings are:</div>
+			<ul>
+				<li><b>likes:</b> {{request.user.userdefault.likes}}</li>
+				<li><b>dislikes:</b> {{request.user.userdefault.dislikes}}</li>
+				<li><b>allergies/sensitivies:</b> {{request.user.userdefault.allergies_or_sensitivities}}</li>
+				<li><b>shipping address:</b> {{request.user.userdefault.shipping_address}}</li>
+			</ul>
+			<a href="{% url 'gifterator_user_manager_defaults' %}" class="btn btn-primary float-right">Update Default Settings</a>
+		</div>
 
-	<div><a href="{% url 'session_manager_profile_update' %}">Update user profile</a></div>
-	<div><a href="{% url 'session_manager_profile_reset_password' %}">Reset password</a></div>
-	<div><a href="{% url 'session_manager_logout' %}">Log out</a></div>
 
 {% endblock %}
 

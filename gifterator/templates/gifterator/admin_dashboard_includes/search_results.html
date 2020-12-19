@@ -1,0 +1,37 @@
+{% if search_results %}
+	<table class="table">
+		{% for result in search_results %}
+			<tr id="search-result_{{result.email}}">
+				<td>{{result.email}}</td>
+				<td>{{result.first_name}}</td>
+				<td>{{result.last_name}}</td>
+				<td>
+					<form method="POST" action="">
+						{% csrf_token %}
+						<input 
+							type="hidden" 
+							id="id_user-email" 
+							name="user-email" 
+							value="{{result.email}}" />
+						<input 
+							type="hidden" 
+							id="id_js_target" 
+							name="js_target" 
+							value="add-user" />
+						<input 
+							type="submit" 
+							class="btn btn-xsmall btn-success js-add-user" 
+							value="Invite" />
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<div class="alert alert-primary">
+		Not who you're looking for? <a href="{% url 'gifterator_exchange_admin_invite_user' ex_uuid=giftexchange.uuid %}">Send an invitation to some one</a>. 
+	</div>
+{% else %}
+	<div class="alert alert-danger">
+		No results found for "{{search_term}}". They may not have a Giterator3k account. Would you like to <a href="{% url 'gifterator_exchange_admin_invite_user' ex_uuid=giftexchange.uuid %}">send an invitation</a>?. 
+	</div>
+{% endif %}

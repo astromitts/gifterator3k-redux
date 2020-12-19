@@ -2,3 +2,8 @@ base/static/.DS_Store
 base/static/vendors/.DS_Store
 *.DS_Store
 *.sqlite3
+base/static/css/vendors/miscellaneous-elements/eps
+base/static/css/vendors/miscellaneous-elements/font
+base/static/css/vendors/miscellaneous-elements/license
+base/static/css/vendors/miscellaneous-elements/psd
+base/static/css/vendors/miscellaneous-elements/svg

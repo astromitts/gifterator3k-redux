@@ -1,0 +1,39 @@
+{% extends 'base/project_base.html' %}
+{% block page_content %}
+	<div class="row">
+		<div class="col">
+			<h1>{{giftexchange.title}}</h1>
+			<table class="table">
+				<tr>
+					<td><strong>Date: </strong></td>
+					<td>{{giftexchange.date}}</td>
+				</tr>
+				<tr>
+					<td><strong>Location: </strong></td>
+					<td>{{giftexchange.location}}</td>
+				</tr>
+				<tr>
+					<td><strong>Spending limit: </strong></td>
+					<td>${{giftexchange.spending_limit}}</td>
+				</tr>
+				<tr>
+					<td><strong>Description: </strong></td>
+					<td>{{giftexchange.description}}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<h2>My Details</h2>
+			{% include 'session_manager/generic_form.html' with form=form %}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h2>Leave Gift Exchange</h2>
+			<a class="btn btn-danger form-control" href="{% url 'gifterator_exchange_handle_invitation' ex_uuid=giftexchange.uuid action='decline' %}">Leave</a>
+		</div>
+	</div>
+{% endblock %}

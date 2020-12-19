@@ -1,0 +1,19 @@
+{% extends 'session_manager/emails/email_base.html' %}
+{% load apptags %}
+
+{% block email_body %}
+	<p>You are giving a gift to {{reciever.user.get_full_name}}!!</p>
+
+	<p>{{reciever|display_likes}}</p>
+	<p>{{reciever|display_dislikes}}</p>
+	<p>{{reciever|display_allergies}}</p>
+	{% if reciever.giftexchange.ship_gifts_allowed and reciever.user.shipping_address %}
+		<p>You can send {{reciever.user.first_name}}'s gift to:<br />
+		{{reciever.user.shipping_address}}</p>
+	{% endif %}
+	<p>
+	Please get a gift by {{reciever.giftexchange.date}} costing no more than ${{reciever.giftexchange.spending_limit}}
+	</p>
+	<br /><br />
+	Thanks for using Gifterator3k!
+{% endblock %}

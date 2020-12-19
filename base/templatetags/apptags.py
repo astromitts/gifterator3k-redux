@@ -8,3 +8,9 @@ def pdb(item):
     """
     import pdb
     pdb.set_trace()
+
+
+@register.filter
+def alert_icon_class(alert):
+    if alert.level_tag == 'success':
+        return 'bell'
