@@ -8,9 +8,18 @@ asgiref = "==3.3.1"
 Django = "==3.1.3"
 pytz = "==2020.4"
 sqlparse = "==0.4.1"
+sendgrid = "==6.4.8"
 
 [packages]
-sendgrid = "*"
+asgiref = "==3.3.1"
+pytz = "==2020.4"
+sqlparse = "==0.4.1"
+Django = "==3.1.3"
+whitenoise = "==5.2.0"
+psycopg2-binary = "==2.8.6"
+gunicorn = "==19.9.0"
+dj-database-url = "==0.5.0"
+sendgrid = "==6.4.8"
 
 [requires]
 python_version = "3.7"
