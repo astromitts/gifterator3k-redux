@@ -129,9 +129,8 @@ class RegisterUser(View):
         return HttpResponse(self.template.render(self.context, request))
 
     def post(self, request, *args, **kwargs):
-        form = CreateUserForm(request.POST)
-        has_error = form.errors or form.non_field_errors()
-        if not has_error:
+        form = CreateUserForm(self.registration_type, request.POST)
+        if form.is_valid():
             appuser = AppUser.objects.get(uuid=request.POST['appuseruuid'])
             if not settings.MAKE_USERNAME_EMAIL:
                 username = request.POST['username']

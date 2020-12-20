@@ -39,7 +39,7 @@ class SessionManagerEmailer(object):
             )
             email_log.save()
 
-        if settings.SEND_EMAILS and settings.SENDGRID_API_KEY:
+        if settings.SEND_EMAILS and settings.SENDGRID_API_KEY and not to_email.endswith('@example.com'):
             message = Mail(
                 from_email=settings.EMAILS_FROM,
                 to_emails=to_email,

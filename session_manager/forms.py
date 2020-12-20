@@ -110,9 +110,14 @@ class PreRegisterUserForm(Form):
         widget=CheckboxInput()
     )
 
-class CreateUserForm(ModelForm):
-    confirm_password = CharField(widget=PasswordInput(attrs={'class': 'form-control'}))
+class CreateUserForm(Form):
     appuseruuid = CharField(widget=HiddenInput())
+    email = CharField(widget=EmailInput(attrs={'class': 'form-control'}))
+    username = CharField(widget=TextInput(attrs={'class': 'form-control'}))
+    first_name = CharField(widget=TextInput(attrs={'class': 'form-control'}))
+    last_name = CharField(widget=TextInput(attrs={'class': 'form-control'}))
+    password = CharField(widget=PasswordInput(attrs={'class': 'form-control'}))
+    confirm_password = CharField(widget=PasswordInput(attrs={'class': 'form-control'}))
     user_agreement_consent = BooleanField(
         label=mark_safe('I have read and agree to the <a href="/end-user-license/">user license agreement</a>'),
         widget=CheckboxInput()
@@ -126,6 +131,7 @@ class CreateUserForm(ModelForm):
         super(CreateUserForm, self).__init__(*args, **kwargs)
         # self.fields['username'].help_text = 'Minimum 3 characters. Letters, numbers, and underscores only.'
         self.fields['password'].help_text = 'Minimum 8 characters. Must contain at least 1 letter, 1 number and 1 special character.'
+        self.registration_type = registration_type
         if registration_type == 'invitation':
             self.fields['email'].widget =  EmailInput(attrs={'class': 'form-control'})
         else:
@@ -135,29 +141,9 @@ class CreateUserForm(ModelForm):
 
         if settings.MAKE_USERNAME_EMAIL:
             self.fields['username'].widget = HiddenInput()
+            self.fields['username'].required = False
         else:
             self.fields['username'].widget = TextInput(attrs={'class': 'form-control'})
-
-    class Meta:
-        model = User
-        fields = [
-                'email',
-                'username',
-                'first_name',
-                'last_name',
-                'password',
-                'confirm_password',
-                'appuseruuid',
-                'user_agreement_consent',
-                'privacy_policy_consent',
-            ]
-
-        widgets = {
-            'password': PasswordInput(attrs={'class': 'form-control'}),
-            'first_name': TextInput(attrs={'class': 'form-control'}),
-            'last_name': TextInput(attrs={'class': 'form-control'}),
-            'appuseruuid': HiddenInput(),
-        }
 
     def clean(self):
         """ Enforces username and password requirements
@@ -176,7 +162,10 @@ class CreateUserForm(ModelForm):
         email_error = validate_email(clean_email, 0)
         if email_error:
             errors.append(email_error)
-
+        if self.registration_type == 'invitation':
+            email_is_unique = validate_unique_email(clean_email, 0)
+        if not settings.MAKE_USERNAME_EMAIL:
+            username_is_unique = validate_unique_username(self.cleaned_data['username'], 0)
         if errors:
             raise ValidationError(mark_safe('<br />'.join(errors)))
         return data
