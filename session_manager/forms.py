@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.forms import (
+    BooleanField,
     CharField,
+    CheckboxInput,
     EmailField,
     EmailInput,
     Form,
@@ -94,9 +96,31 @@ def validate_password(clean_password, confirm_password):
     return error_message
 
 
+class PreRegisterUserForm(Form):
+    email = CharField(
+        label='Email address',
+        widget=EmailInput({'class': 'form-control'})
+    )
+    user_agreement_consent = BooleanField(
+        label=mark_safe('I have read and agree to the <a href="/end-user-license/">user license agreement</a>'),
+        widget=CheckboxInput()
+    )
+    privacy_policy_consent = BooleanField(
+        label=mark_safe('I have read and agree to the <a href="/privacy-policy/">privacy policy</a>'),
+        widget=CheckboxInput()
+    )
+
 class CreateUserForm(ModelForm):
     confirm_password = CharField(widget=PasswordInput(attrs={'class': 'form-control'}))
     appuseruuid = CharField(widget=HiddenInput())
+    user_agreement_consent = BooleanField(
+        label=mark_safe('I have read and agree to the <a href="/end-user-license/">user license agreement</a>'),
+        widget=CheckboxInput()
+    )
+    privacy_policy_consent = BooleanField(
+        label=mark_safe('I have read and agree to the <a href="/privacy-policy/">privacy policy</a>'),
+        widget=CheckboxInput()
+    )
 
     def __init__(self, registration_type='website', *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
@@ -106,6 +130,8 @@ class CreateUserForm(ModelForm):
             self.fields['email'].widget =  EmailInput(attrs={'class': 'form-control'})
         else:
             self.fields['email'].widget =  HiddenInput()
+            self.fields['user_agreement_consent'].widget = HiddenInput(attrs={'value': 'checked'})
+            self.fields['privacy_policy_consent'].widget = HiddenInput(attrs={'value': 'checked'})
 
         if settings.MAKE_USERNAME_EMAIL:
             self.fields['username'].widget = HiddenInput()
@@ -122,13 +148,15 @@ class CreateUserForm(ModelForm):
                 'password',
                 'confirm_password',
                 'appuseruuid',
+                'user_agreement_consent',
+                'privacy_policy_consent',
             ]
 
         widgets = {
             'password': PasswordInput(attrs={'class': 'form-control'}),
             'first_name': TextInput(attrs={'class': 'form-control'}),
             'last_name': TextInput(attrs={'class': 'form-control'}),
-            'appuseruuid': HiddenInput()
+            'appuseruuid': HiddenInput(),
         }
 
     def clean(self):

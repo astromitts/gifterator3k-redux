@@ -16,6 +16,7 @@ from session_manager.forms import (
     CreateUserForm,
     EmailForm,
     LoginEmailForm,
+    PreRegisterUserForm,
     LoginPasswordForm,
     RegistrationLinkForm,
     ResetPasswordForm,
@@ -43,14 +44,14 @@ class PreRegisterUser(View):
         self.context = {}
 
     def get(self, request, *args, **kwargs):
-        form = LoginEmailForm()
+        form = PreRegisterUserForm()
         self.context.update({
             'form': form,
         })
         return HttpResponse(self.template.render(self.context, request))
 
     def post(self, request, *args, **kwargs):
-        form = LoginEmailForm(request.POST)
+        form = PreRegisterUserForm(request.POST)
         if form.is_valid():
             email_error = validate_email(request.POST['email'], 0)
             if email_error:

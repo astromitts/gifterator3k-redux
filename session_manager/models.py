@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 
 from django.urls import reverse
+from django.utils import timezone
 
 from datetime import datetime, timedelta
 
@@ -182,6 +183,8 @@ class AppUser(models.Model):
         ),
         default='not processed',
     )
+    user_consent_timestamp = models.DateTimeField(default=timezone.now)
+    privacy_policy_timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return '{} AppUser: {} [{}] post process: {}'.format(
