@@ -324,7 +324,7 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
                 'html': result_html
             })
         elif post_target == 'add-user':
-            user = SessionManager.get_user_by_email(request.POST['user-email'])
+            user = SessionManager.get_user_by_username_or_email(request.POST['user-email'])
             if user == self.user:
                 self.participant.status = 'active'
                 self.participant.save()
@@ -348,7 +348,7 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
             self.data.update(self._render_participant_list(request))
             self.data.update({'postProcessUrl': email_view_url})
         elif post_target == 'remove-user':
-            user = SessionManager.get_user_by_email(request.POST['user-email'])
+            user = SessionManager.get_user_by_username_or_email(request.POST['user-email'])
             participant = ExchangeParticipant.objects.get(user=user, giftexchange=self.giftexchange)
             if user == self.user:
                 participant.status = 'inactive'
