@@ -235,11 +235,13 @@ class GiftExchangeAdminDashboard(GifteratorBase):
     def setup(self, request, *args, **kwargs):
         super(GiftExchangeAdminDashboard, self).setup(request, *args, **kwargs)
         self.template = loader.get_template('gifterator/giftexchange_manage_dashboard.html')
-
-        self.context['breadcrumbs'] = [
-            ('Gift Exchanges', reverse('gifterator_dashboard')),
-            ('{} Admin'.format(self.giftexchange.title), None)
-        ]
+        self.context.update({
+            'PREVIEW_EMAILS_IN_APP': settings.PREVIEW_EMAILS_IN_APP,
+            'breadcrumbs': [
+                ('Gift Exchanges', reverse('gifterator_dashboard')),
+                ('{} Admin'.format(self.giftexchange.title), None),
+            ]
+        })
         self.exchange_details_form = GiftExchangeBaseForm
         self.participant_email_form = ParticipantEmailForm
         exchange_details_form = self.exchange_details_form(

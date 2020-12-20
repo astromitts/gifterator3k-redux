@@ -69,7 +69,9 @@ function bindAddFromSearch(apiTargetUrl) {
 			bindRemoveUser(apiTargetUrl);
 			$(this).closest('tr').remove();
 			refreshDashoardTools(postResult.giftExchange);
-			window.open(postResult.postProcessUrl, '_blank');
+			if (PREVIEW_EMAILS_IN_APP == 'True') {
+				window.open(postResult.postProcessUrl, '_blank');
+			}
 		} else {
 			errorMessage(postResult.message);
 		}
