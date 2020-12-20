@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.urls import resolve, reverse
 from django.urls.exceptions import Resolver404
 
-from gifterator.models import GiftExchange, GiftExchangeParticipant
+from gifterator.models import GiftExchange, ExchangeParticipant
 
 
 def session_request_validation(get_response):
@@ -47,7 +47,7 @@ def session_request_validation(get_response):
                     status_code = 404
                 else:
                     user = User.objects.get(pk=request.session['_auth_user_id'])
-                    participant = GiftExchangeParticipant.objects.filter(
+                    participant = ExchangeParticipant.objects.filter(
                         appuser=user.appuser,
                         giftexchange=giftexchange,
                         status__in=['active', 'invited']).first()

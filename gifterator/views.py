@@ -20,7 +20,7 @@ from gifterator.mailer import GifteratorMailer
 from gifterator.models import (
     ExchangeAssignment,
     GiftExchange,
-    GiftExchangeParticipant,
+    ExchangeParticipant,
     AppUser,
 )
 from session_manager.models import SessionManager, UserToken
@@ -36,18 +36,18 @@ class GifteratorBase(View):
         }
         if 'ex_uuid' in kwargs:
             self.giftexchange = GiftExchange.objects.get(uuid=kwargs['ex_uuid'])
-            self.participant = GiftExchangeParticipant.objects.get(
+            self.participant = ExchangeParticipant.objects.get(
                 appuser=self.appuser,
                 giftexchange=self.giftexchange
             )
-            self.participant_list = self.giftexchange.giftexchangeparticipant_set.filter(status='active')
+            self.participant_list = self.giftexchange.exchangeparticipant_set.filter(status='active')
             self.active_participant_users = [
                 p.appuser.user for p in self.participant_list
             ]
             self.all_participant_users = [
-                p.appuser.user for p in self.giftexchange.giftexchangeparticipant_set.all()
+                p.appuser.user for p in self.giftexchange.exchangeparticipant_set.all()
             ]
-            self.invited_list = self.giftexchange.giftexchangeparticipant_set.filter(status='invited')
+            self.invited_list = self.giftexchange.exchangeparticipant_set.filter(status='invited')
             self.assigment_list = self.giftexchange.exchangeassignment_set
             self.context.update({
                 'user': self.user,
@@ -89,12 +89,12 @@ class UserDefaultManager(GifteratorBase):
 class GiftExchangeDashboard(GifteratorBase):
     def get(self, request, *args, **kwargs):
         template = loader.get_template('gifterator/dashboard.html')
-        admin_exchange_participants = GiftExchangeParticipant.objects.filter(appuser=self.appuser, is_admin=True)
-        participant_exchange_participants = GiftExchangeParticipant.objects.filter(
+        admin_exchange_participants = ExchangeParticipant.objects.filter(appuser=self.appuser, is_admin=True)
+        participant_exchange_participants = ExchangeParticipant.objects.filter(
             appuser=self.appuser,
             status='active'
         )
-        invited_exchange_participants = GiftExchangeParticipant.objects.filter(
+        invited_exchange_participants = ExchangeParticipant.objects.filter(
             appuser=self.appuser,
             status='invited'
         )
@@ -124,9 +124,9 @@ class GiftExchangeHandleInvitation(GifteratorBase):
         return redirect(reverse('gifterator_dashboard'))
 
 
-class GiftExchangeParticipantdetail(GifteratorBase):
+class ExchangeParticipantDetail(GifteratorBase):
     def setup(self, request, *args, **kwargs):
-        super(GiftExchangeParticipantdetail, self).setup(request, *args, **kwargs)
+        super(ExchangeParticipantDetail, self).setup(request, *args, **kwargs)
         self.template = loader.get_template('gifterator/giftexchange_participant_view.html')
         self.form = ParticipantDetailsForm
         self.context['breadcrumbs'] = [
@@ -170,7 +170,7 @@ class GiftExchangeAdminEmailer(GifteratorBase):
             mailer = GifteratorMailer()
             mailer.send_assignment_email(assignment)
         elif mail_type == 'exchange-invitation':
-            invitee = GiftExchangeParticipant.objects.get(pk=request.GET['participant_id'])
+            invitee = ExchangeParticipant.objects.get(pk=request.GET['participant_id'])
             mailer = GifteratorMailer()
             mailer.send_exchange_invitation_email(invitee.appuser, self.giftexchange, existing_user=True)
 
@@ -202,13 +202,13 @@ class GiftExchangeAdminAppInvite(GifteratorBase):
     def post(self, request, *args, **kwargs):
         form = self.form(request.POST)
         if form.is_valid():
-            user_exists = SessionManager.get_user_by_email(request.POST['email'])
+            user_exists = SessionManager.get_user_by_username_or_email(request.POST['email'])
             if user_exists:
                 messages.error(request, '{} already has an account.'.format(user_exists.email))
             else:
                 new_app_user = AppUser()
                 new_app_user.save()
-                participant = GiftExchangeParticipant.get_or_create(
+                participant = ExchangeParticipant.get_or_create(
                     appuser=new_app_user,
                     giftexchange=self.giftexchange,
                     status='pending'
@@ -253,7 +253,7 @@ class GiftExchangeAdminDashboard(GifteratorBase):
             }
         )
         participant_email_form = self.participant_email_form
-        self.context['pending_count'] = self.giftexchange.giftexchangeparticipant_set.filter(status='pending').count()
+        self.context['pending_count'] = self.giftexchange.exchangeparticipant_set.filter(status='pending').count()
         self.context['exchange_details_form'] = exchange_details_form
         self.context['participant_email_form'] = participant_email_form
         self.return_url = reverse(
@@ -330,7 +330,7 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
                 self.participant.save()
             else:
                 # TODO get_or_create here?
-                participant = GiftExchangeParticipant.get_or_create(
+                participant = ExchangeParticipant.get_or_create(
                     appuser=user.appuser,
                     status='invited',
                     giftexchange=self.giftexchange
@@ -349,7 +349,7 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
             self.data.update({'postProcessUrl': email_view_url})
         elif post_target == 'remove-user':
             user = SessionManager.get_user_by_email(request.POST['user-email'])
-            participant = GiftExchangeParticipant.objects.get(user=user, giftexchange=self.giftexchange)
+            participant = ExchangeParticipant.objects.get(user=user, giftexchange=self.giftexchange)
             if user == self.user:
                 participant.status = 'inactive'
                 participant.save()
@@ -438,7 +438,7 @@ class GiftExchangeFormView(GifteratorBase):
                 status = 'active'
             else:
                 status = 'inactive'
-            participant = GiftExchangeParticipant.create(
+            participant = ExchangeParticipant.create(
                 self.appuser,
                 giftexchange,
                 is_admin=True,

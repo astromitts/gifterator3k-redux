@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.forms import (
-    BooleanField,
     CharField,
     EmailField,
     EmailInput,
@@ -96,52 +95,41 @@ def validate_password(clean_password, confirm_password):
 
 
 class CreateUserForm(ModelForm):
-    appuser_uuid = CharField(widget=HiddenInput())
     confirm_password = CharField(widget=PasswordInput(attrs={'class': 'form-control'}))
-    user_consent = BooleanField(
-        required=True,
-        help_text='I have read and agree to the <a href="/end-user-license/">end user license agreement</a>.'
-    )
-    privacy_policy = BooleanField(
-        required=True,
-        help_text='I have read and agree to the <a href="/privacy-policy/">privacy policy</a>.'
-    )
+    appuseruuid = CharField(widget=HiddenInput())
 
-    def __init__(self, registration_from_invitation=False, *args, **kwargs):
+    def __init__(self, registration_type='website', *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
         # self.fields['username'].help_text = 'Minimum 3 characters. Letters, numbers, and underscores only.'
         self.fields['password'].help_text = 'Minimum 8 characters. Must contain at least 1 letter, 1 number and 1 special character.'
-        if registration_from_invitation:
-            self.fields['email'].widget = EmailInput(attrs={'class': 'form-control'})
+        if registration_type == 'invitation':
+            self.fields['email'].widget =  EmailInput(attrs={'class': 'form-control'})
         else:
-            self.fields['user_consent'].widget = HiddenInput(attrs={'value': 'checked'})
-            self.fields['privacy_policy'].widget = HiddenInput(attrs={'value': 'checked'})
+            self.fields['email'].widget =  HiddenInput()
+
+        if settings.MAKE_USERNAME_EMAIL:
+            self.fields['username'].widget = HiddenInput()
+        else:
+            self.fields['username'].widget = TextInput(attrs={'class': 'form-control'})
 
     class Meta:
         model = User
-        base_fields = [
-            'first_name',
-            'last_name',
-            'password',
-            'confirm_password',
-            'appuser_uuid',
-            'user_consent',
-            'privacy_policy',
-        ]
-
-        if settings.MAKE_USERNAME_EMAIL:
-            fields = ['email', ] + base_fields
-        else:
-            fields = ['email', 'username', ] + base_fields
+        fields = [
+                'email',
+                'username',
+                'first_name',
+                'last_name',
+                'password',
+                'confirm_password',
+                'appuseruuid',
+            ]
 
         widgets = {
             'password': PasswordInput(attrs={'class': 'form-control'}),
-            'email': HiddenInput(),
             'first_name': TextInput(attrs={'class': 'form-control'}),
             'last_name': TextInput(attrs={'class': 'form-control'}),
+            'appuseruuid': HiddenInput()
         }
-        if not settings.MAKE_USERNAME_EMAIL:
-            widgets['username'] = TextInput(attrs={'class': 'form-control'})
 
     def clean(self):
         """ Enforces username and password requirements
@@ -212,16 +200,13 @@ class LoginPasswordForm(ModelForm):
         }
 
 
-class RegistrationEmailForm(Form):
-    email = EmailField(widget=EmailInput(attrs={'class': 'form-control'}))
-    user_consent = BooleanField(
-        required=True,
-        help_text='I have read and agree to the <a href="/end-user-license/">end user license agreement</a>.'
-    )
-    privacy_policy = BooleanField(
-        required=True,
-        help_text='I have read and agree to the <a href="/privacy-policy/">privacy policy</a>.'
-    )
+class RegistrationLinkForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['email']
+        widgets = {
+            'email': HiddenInput(),
+        }
 
 
 class UserProfileForm(Form):
@@ -247,6 +232,10 @@ class UserProfileForm(Form):
             raise ValidationError(mark_safe(''.join(errors)))
 
         return data
+
+
+class EmailForm(Form):
+    email_address = CharField(widget=EmailInput(attrs={'class': 'form-control'}))
 
 
 class UserProfileUsernameForm(UserProfileForm):

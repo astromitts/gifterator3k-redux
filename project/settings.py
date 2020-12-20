@@ -137,6 +137,7 @@ MAKE_USERNAME_EMAIL = True
 MIDDLEWARE_DEBUG = True
 AUTHENTICATION_EXEMPT_VIEWS = [
     'session_manager_register',
+    'session_manager_preregister',
     'session_manager_login',
     'session_manager_token_reset_password',
     'session_manager_send_reset_password_link',

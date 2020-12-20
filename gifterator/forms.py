@@ -15,7 +15,7 @@ from django.forms import (
 
 from gifterator.models import (
     GiftExchange,
-    GiftExchangeParticipant,
+    ExchangeParticipant,
     UserDefault,
 )
 
@@ -62,7 +62,7 @@ class ParticipantDetailsForm(ModelForm):
                 self.fields[field_name].widget = Textarea(attrs=field_attrs)
 
     class Meta:
-        model = GiftExchangeParticipant
+        model = ExchangeParticipant
         fields = [
             '_likes',
             '_dislikes',

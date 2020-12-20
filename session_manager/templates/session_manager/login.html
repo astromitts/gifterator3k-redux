@@ -5,7 +5,7 @@
 		<div class="col">
 			<div class="alert alert-primary">
 				{% if login_stage == 1 %}
-					Don't have an account? <a href="{% url 'session_manager_register' %}">Register here</a>.
+					Don't have an account? <a href="{% url 'session_manager_preregister' %}">Register here</a>.
 				{% elif login_stage == 2 %}
 					Need password help? 
 					<form class="inline" method="POST" action="{% url 'session_manager_send_reset_password_link' %}">

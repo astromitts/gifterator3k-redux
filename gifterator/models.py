@@ -69,15 +69,15 @@ class GiftExchange(BaseModel):
         return new_instance
 
     def _generate_assignments(self):
-        starting_giver = self.giftexchangeparticipant_set.filter(status='active').order_by('?').first()
+        starting_giver = self.exchangeparticipant_set.filter(status='active').order_by('?').first()
         current_giver = starting_giver
 
-        participants = self.giftexchangeparticipant_set.filter(status='active').all()
+        participants = self.exchangeparticipant_set.filter(status='active').all()
         assignments = []
         reciever_appusers = [starting_giver, ]
-        while len(assignments) <= self.giftexchangeparticipant_set.filter(status='active').all().count() - 2:
+        while len(assignments) <= self.exchangeparticipant_set.filter(status='active').all().count() - 2:
             exclusions = reciever_appusers + [current_giver]
-            random_reciever_qs = self.giftexchangeparticipant_set.filter(status='active').exclude(pk__in=[ex.pk for ex in exclusions])
+            random_reciever_qs = self.exchangeparticipant_set.filter(status='active').exclude(pk__in=[ex.pk for ex in exclusions])
             random_reciever = random_reciever_qs.order_by('?').first()
 
             if random_reciever:
@@ -139,7 +139,7 @@ class GiftExchange(BaseModel):
         return assignment_objects
 
 
-class GiftExchangeParticipant(BaseModel):
+class ExchangeParticipant(BaseModel):
     giftexchange = models.ForeignKey(GiftExchange, on_delete=models.CASCADE)
     appuser = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     _likes = models.TextField(blank=True, null=True)
@@ -256,6 +256,6 @@ class GiftExchangeParticipant(BaseModel):
 
 class ExchangeAssignment(BaseModel):
     giftexchange = models.ForeignKey(GiftExchange, on_delete=models.CASCADE)
-    giver = models.ForeignKey(GiftExchangeParticipant, on_delete=models.CASCADE, related_name='giftexchange_giver')
-    reciever = models.ForeignKey(GiftExchangeParticipant, on_delete=models.CASCADE, related_name='giftexchange_reciever')
+    giver = models.ForeignKey(ExchangeParticipant, on_delete=models.CASCADE, related_name='giftexchange_giver')
+    reciever = models.ForeignKey(ExchangeParticipant, on_delete=models.CASCADE, related_name='giftexchange_reciever')
 
