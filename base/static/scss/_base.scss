@@ -291,8 +291,19 @@ form.inline {
 	}
 }
 
+.page-container {
+  position: relative;
+  min-height: 100vh;
+ }
+
+ .content-container {
+ 	padding-bottom: 9rem;
+ }
+
 .footer {
 	bottom: 0;
+	position: absolute;
+	left: 0;
 	margin-top: 3rem;
 	width: 100%;
 	background-color: $app-primary;
