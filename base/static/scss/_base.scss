@@ -1,4 +1,6 @@
 /* Variables */
+$screen-sm-min: 360px;
+$screen-md-min: 768px;
 
 $navbar-font: 'Nunito', sans-serif;
 $app-primary: #21618C;
@@ -131,7 +133,10 @@ span.helptext{
  }
 
  .content-container {
- 	padding-bottom: 9rem;
+ 	padding-bottom: 16rem;
+ 	@media (min-width: #{$screen-md-min}) {	
+ 		padding-bottom: 12rem;
+ 	}
  }
 
 .footer {

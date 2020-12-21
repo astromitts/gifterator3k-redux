@@ -19,15 +19,6 @@
 	<div class="row">
 		<div class="col">
 			<h2>
-				<div class="icon icon-giftbox"></div>
-				<div class="icon-text">Gift Exchange Details</div>
-			</h2>
-			<div id="details-form">
-				{% include 'session_manager/generic_form.html' with form=exchange_details_form submit_id='update-details' %}
-			</div>
-		</div>
-		<div class="col">
-			<h2>
 				<div class="icon icon-person-multi"></div>
 				<div class="icon-text">Participants</div>
 			</h2>
@@ -120,6 +111,15 @@
 						You must have at least 3 active participants to set gift assignments.
 					</div>
 				</div>
+		</div>
+		<div class="col">
+			<h2>
+				<div class="icon icon-giftbox"></div>
+				<div class="icon-text">Gift Exchange Details</div>
+			</h2>
+			<div id="details-form">
+				{% include 'session_manager/generic_form.html' with form=exchange_details_form submit_id='update-details' %}
+			</div>
 		</div>
 	</div>
 	<div class="row" id="id_search-users" class="default-hidden">

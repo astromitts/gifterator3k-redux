@@ -25,7 +25,7 @@
 
 				{% if exchange.participants_notified %}
 					<div class="dashboardcard-userinfo">
-						{% with address=pg_ex.giver_assignment.reciever.shipping_address name=pg_ex.giver_assignment.reciever.user.first_name full_name=pg_ex.giver_assignment.reciever.user.get_full_name reciever=pg_ex.giver_assignment.reciever %}
+						{% with address=pg_ex.giver_assignment.reciever.shipping_address name=pg_ex.giver_assignment.reciever.first_name full_name=pg_ex.giver_assignment.reciever.full_name reciever=pg_ex.giver_assignment.reciever %}
 							<div>
 								<div class="icon icon-person"></div>
 								<div class="icon-text icon-text-large">

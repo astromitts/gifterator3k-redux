@@ -104,7 +104,12 @@ span.helptext_required {
 }
 
 .content-container {
-  padding-bottom: 9rem;
+  padding-bottom: 16rem;
+}
+@media (min-width: 768px) {
+  .content-container {
+    padding-bottom: 12rem;
+  }
 }
 
 .footer {
