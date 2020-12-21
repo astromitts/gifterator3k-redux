@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 
 class GifteratorMailer(SessionManagerEmailer):
     def send_assignment_email(self, exchange_assignment):
-        to_email = exchange_assignment.giver.user.email
+        to_email = exchange_assignment.giver.email
         email_type ='Assignment email'
         subject = 'You have been given an assignment for "{}"!'.format(
             exchange_assignment.giftexchange.title

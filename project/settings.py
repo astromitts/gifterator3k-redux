@@ -158,7 +158,7 @@ SEND_EMAILS = False
 EMAILS_FROM = 'admin@example.com'
 EMAIL_REPLY_TO = 'info@example.com'
 SENDGRID_API_KEY = None
-PREVIEW_EMAILS_IN_APP = True
+PREVIEW_EMAILS_IN_APP = False
 
 
 HOST = 'http://127.0.0.1:8000'

@@ -158,6 +158,8 @@ class ExchangeParticipant(BaseModel):
         ),
         default='active'
     )
+    email_sent = models.BooleanField(default=False)
+    email_last_sent = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         if self.appuser.user:

@@ -1,5 +1,6 @@
 function doSynchedPost(targetUrl, postData) {
 	var resultData;
+	showLoader();
 	$.ajax({
 		method: 'POST',
 		url: targetUrl,
@@ -10,11 +11,15 @@ function doSynchedPost(targetUrl, postData) {
 			resultData = data;
 		}
 	});
+	setTimeout(function () {
+		hideLoader();
+    }, 500);
 	return resultData;
 }
 
 function doSynchedGet(targetUrl) {
-		var resultData;
+	var resultData;
+	showLoader();
 	$.ajax({
 		method: 'GET',
 		url: targetUrl,
@@ -24,6 +29,10 @@ function doSynchedGet(targetUrl) {
 			resultData = data;
 		}
 	});
+	
+	setTimeout(function () {
+		hideLoader();
+    }, 500);
 	return resultData;
 }
 
@@ -105,12 +114,29 @@ function bindAssignmentsFunctions(apiTargetUrl) {
 		if (postResult.status == 'success') {
 			if ( postResult.html ) {
 				$('div#assignment-list').html(postResult.html);
+				bindSendSingleSend(apiTargetUrl);
 			}
 			refreshDashoardTools(postResult.giftExchange);
 		} else {
 			errorMessage(postResult.message);
 		}
 	});
+}
+
+function bindSendSingleSend(apiTargetUrl) {
+	var postResult;
+	$('input.js-single-notify').click(function notifyUser(event){
+		event.preventDefault();
+		postData = $(this).closest('form').serialize();
+		postResult = doSynchedPost(apiTargetUrl, postData);
+		if (postResult.status == 'success') {
+			$('div#assignment-list').html(postResult.html);
+			bindSendSingleSend(apiTargetUrl);
+			refreshDashoardTools(postResult.giftExchange);
+		} else {
+			errorMessage(postResult.message);
+		}
+	});	
 }
 
 function disableDetailForm() {
@@ -143,6 +169,7 @@ function refreshDashoardTools(giftExchange) {
 		$('div#assignment-list').show();
 		$('input#id_unset-assignments').hide();
 		$('input#id_lock-assignments').hide();
+		$('div.resend-assignment').show();
 	} else if ( giftExchange.hasAssignments ) {
 		$('div#participant-list').hide();
 		$('div#assignment-list').show();
@@ -192,5 +219,6 @@ $(document).ready(function(){
 	bindEmailSearch(apiTargetUrl);
 	bindRemoveUser(apiTargetUrl);
 	bindAssignmentsFunctions(apiTargetUrl);
+	bindSendSingleSend(apiTargetUrl);
 	setUpDashboard(apiTargetUrl)
 });

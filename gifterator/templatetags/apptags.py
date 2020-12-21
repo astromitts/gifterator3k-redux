@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -7,6 +8,10 @@ register = template.Library()
 def pdb(item):
     import pdb
     pdb.set_trace()
+
+@register.filter
+def format_date_time(datetime):
+    return mark_safe(datetime.strftime('%b %d<br /> %H:%M %p %Z'))
 
 @register.filter
 def display_user_information(information):
@@ -19,26 +24,26 @@ def display_user_information(information):
 def display_likes(participant):
     if participant.likes:
         return '{} likes: {}'.format(
-            participant.user.first_name, participant.likes)
+            participant.first_name, participant.likes)
     else:
         return '{} likes nothing, apparently. good luck!'.format(
-            participant.user.first_name)
+            participant.first_name)
 
 @register.filter
 def display_dislikes(participant):
     if participant.dislikes:
         return '{} dislikes: {}'.format(
-            participant.user.first_name, participant.dislikes)
+            participant.first_name, participant.dislikes)
     else:
         return "{} dislikes nothing, apparently. That's good news!".format(
-            participant.user.first_name)
+            participant.first_name)
 
 @register.filter
 def display_allergies(participant):
     if participant.allergies_or_sensitivities:
         return '{} reported the following allergies/sensitivies: {}'.format(
-            participant.user.first_name, participant.allergies_or_sensitivities)
+            participant.first_name, participant.allergies_or_sensitivities)
     else:
         return '{} reported no allergies or sensitivies'.format(
-            participant.user.first_name)
+            participant.first_name)
 

@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, resolve_url
 from django.template import loader
 from django.views import View
 from django.urls import reverse
+from django.utils import timezone
 
 from gifterator.forms import (
     GiftExchangeBaseForm,
@@ -405,9 +406,35 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
         elif post_target == 'notify-participants':
             self.giftexchange.participants_notified = True
             self.giftexchange.save()
+            for assignment in self.giftexchange.exchangeassignment_set.all():
+                mailer = GifteratorMailer()
+                mailer.send_assignment_email(assignment)
+                assignment.giver.email_last_sent = timezone.now()
+                assignment.giver.save()
+            result_html = loader.render_to_string(
+                'gifterator/admin_dashboard_includes/assignments_list.html',
+                context=self.context,
+                request=request,
+            )
             self.data.update({
                 'status': 'success',
-                'html': False
+                'html': result_html
+            })
+
+        elif post_target == 'notify-single-participant':
+            assignment = ExchangeAssignment.objects.get(pk=request.POST['assignment_id'])
+            mailer = GifteratorMailer()
+            mailer.send_assignment_email(assignment)
+            assignment.giver.email_last_sent = timezone.now()
+            assignment.giver.save()
+            result_html = loader.render_to_string(
+                'gifterator/admin_dashboard_includes/assignments_list.html',
+                context=self.context,
+                request=request,
+            )
+            self.data.update({
+                'status': 'success',
+                'html': result_html
             })
 
         self._refresh_data()
