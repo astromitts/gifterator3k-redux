@@ -2,7 +2,7 @@
 {% load apptags %}
 
 {% block email_body %}
-	<p>You are giving a gift to {{reciever.user.get_full_name}}!!</p>
+	<p>You are giving a gift to {{reciever.full_name}}!!</p>
 
 	<p>{{reciever|display_likes}}</p>
 	<p>{{reciever|display_dislikes}}</p>

@@ -23,15 +23,28 @@ ol.breadcrumb {
   font-family: "Nunito", sans-serif;
   color: #FFFFFF !important;
   font-weight: bold;
-  font-size: 2.8rem;
+  font-size: 1.5rem;
+}
+@media (min-width: 768px) {
+  .navbar a.navbar-brand {
+    font-size: 2.8rem;
+  }
 }
 .navbar a.navbar-brand img {
   margin-right: 0.3rem;
   margin-top: -1rem;
-  width: 4rem;
+  width: 3rem;
+}
+@media (min-width: 768px) {
+  .navbar a.navbar-brand img {
+    width: 4rem;
+  }
 }
 .navbar a.nav-link {
   font-size: 1.2rem;
+}
+.navbar img.profile-icon {
+  width: 3rem;
 }
 
 .navbar-light .navbar-nav .nav-link {
@@ -163,6 +176,10 @@ h1, h2, h3, h4 {
   font-family: "Nunito", sans-serif;
 }
 
+h2 {
+  font-size: 1.3rem;
+}
+
 .margin-top-1 {
   margin-top: 1rem;
 }
@@ -261,6 +278,19 @@ h1, h2, h3, h4 {
   background-image: url("vendors/miscellaneous-elements/png/010-information.png");
 }
 
+.dashboardcard {
+  margin-bottom: 2rem;
+}
+@media (min-width: 768px) {
+  .dashboardcard {
+    width: 18rem;
+  }
+}
+.dashboardcard_title {
+  font-weight: bold;
+  color: #4A4A4A;
+  font-size: 1.5rem;
+}
 .dashboardcard-description {
   padding-top: 1rem;
   padding-bottom: 1rem;

@@ -1,35 +1,70 @@
 {% extends 'base/project_base.html' %}
 {% block page_content %}
-
-	<h1>Welcome!</h1> 
 	<div class="row">
 		<div class="col">
 			<div><a href="{% url 'session_manager_profile_reset_password' %}">Reset password</a></div>
 			<div><a href="{% url 'session_manager_logout' %}">Log out</a></div>
 		</div>
+	</div>
+	<div class="row margin-top-1">
 		<div class="col">
-			<div>You are logged in as:</div>
-			<ul>
+			<h2>Contact Information</h2>
+			<div class="as-table">
 				{% if show_username %}
-					<li><b>Username:</b> {{request.user.username}}</li>
+				<div class="as-row">
+					<div class="as-cell">Username:</div> 
+					<div class="as-cell">{{request.user.username}}</div>
+				</div>
 				{% endif %}
-				<li><b>First name:</b> {{request.user.first_name}}</li>
-				<li><b>Last name:</b> {{request.user.last_name}}</li>
-				<li><b>Email:</b> {{request.user.email}}</li>
-			</ul>
-			<a href="{% url 'session_manager_profile_update' %}" class="btn btn-primary float-right">Update Profile</a>
+				<div class="as-row">
+					<div class="as-cell">First name:</div> 
+					<div class="as-cell">{{request.user.first_name}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell">Last name:</div> 
+					<div class="as-cell">{{request.user.last_name}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell">Email:</div> 
+					<div class="as-cell">{{request.user.email}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell"></div> 
+					<div class="as-cell">
+						<a href="{% url 'session_manager_profile_update' %}" class="btn btn-primary float-right">Update</a>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="col">
-			<div>Your default gift exchange settings are:</div>
-			<ul>
-				<li><b>likes:</b> {{request.user.appuser.userdefault.likes}}</li>
-				<li><b>dislikes:</b> {{request.user.appuser.userdefault.dislikes}}</li>
-				<li><b>allergies/sensitivies:</b> {{request.user.appuser.userdefault.allergies_or_sensitivities}}</li>
-				<li><b>shipping address:</b> {{request.user.appuser.userdefault.shipping_address}}</li>
-			</ul>
-			<a href="{% url 'gifterator_user_manager_defaults' %}" class="btn btn-primary float-right">Update Default Settings</a>
+		<div class="col margin-top-1">
+			<h2>Gift exchange settings</h2>
+			<div class="as-table">
+				<div class="as-row">
+					<div class="as-cell">Likes:</div> 
+					<div class="as-cell">{{request.user.appuser.userdefault.likes}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell">Dislikes:</div> 
+					<div class="as-cell">{{request.user.appuser.userdefault.dislikes}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell">Allergies/<br />sensitivites:</div> 
+					<div class="as-cell">{{request.user.appuser.userdefault.allergies_or_sensitivities}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell">Shipping address:</div> 
+					<div class="as-cell">
+					{{request.user.appuser.userdefault.shipping_address}}</div>
+				</div>
+				<div class="as-row">
+					<div class="as-cell"></div> 
+					<div class="as-cell">
+						<a href="{% url 'gifterator_user_manager_defaults' %}" class="btn btn-primary float-right">Update</a>
+					</div>
+				</div>
+			</div>
 		</div>
-
+	</div>
 
 {% endblock %}
 

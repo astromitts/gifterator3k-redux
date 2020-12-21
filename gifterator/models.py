@@ -222,6 +222,7 @@ class ExchangeParticipant(BaseModel):
                 giftexchange=giftexchange
             )
         instance.status = status
+        instance.is_admin = False
         instance.save()
         return instance
 

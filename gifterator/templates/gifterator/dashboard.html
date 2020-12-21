@@ -11,15 +11,10 @@
 	</div>
 
 	<div class="row margin-top-1">
-		<div class="col">
-			<h2>Current Gift Exchanges</h2>
-		</div>
-	</div>
-	<div class="row">
 	{% for pg_ex in participant_exchanges %}
 		{% with pg_ex.giftexchange as exchange %}
 		<div class="col">
-			<div class="dashboardcard" style="width: 18rem;">
+			<div class="dashboardcard">
 
 				{% include 'gifterator/dashboard-includes/exchange-details.html' %}
 
@@ -90,29 +85,6 @@
 					{% include 'gifterator/dashboard-includes/exchange-details.html' %}
 					<a href="{% url 'gifterator_exchange_handle_invitation' ex_uuid=exchange.uuid action='accept' %}" class="btn btn-primary card-link">Accept</a>
 					<a href="{% url 'gifterator_exchange_handle_invitation' ex_uuid=exchange.uuid action='decline' %}" class="btn btn-warning card-link">Decline</a>
-				</div>
-			</div>
-		{% endfor %}	
-		</div>
-	{% endif %}
-
-	{% if admin_exchanges %}
-		<div class="row margin-top-2">
-			<div class="col">
-				<h2>Gift Exchanges Admin</h2>
-			</div>
-		</div>
-		<div class="row">
-		{% for exchange in admin_exchanges %}
-			<div class="col">
-				<div class="dashboardcard" style="width: 18rem;">
-					{% include 'gifterator/dashboard-includes/exchange-details.html' %}
-
-					<div class="dashboardcard-userinfo_text">
-						<div class="dashboardcard-userinfo_link">
-							<a href="{% url 'gifterator_exchange_admin_dashboard' ex_uuid=exchange.uuid %}">Manage</a>
-						</div>
-					</div>
 				</div>
 			</div>
 		{% endfor %}	

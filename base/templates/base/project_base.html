@@ -40,7 +40,8 @@
 				<ul class="navbar-nav">
 					{% if request.user.is_authenticated %}
 						<li class="nav-item">
-							<a href="{% url 'session_manager_profile' %}" class="nav-link">Logged in as: {{request.user.username}}</a>
+							<a href="{% url 'session_manager_profile' %}" class="nav-link"><img class="profile-icon" src="{% static 'site-images/profile-icon-filled.png' %}" />
+							</a>
 						</li>
 					{% else %}
 						<li class="nav-item">

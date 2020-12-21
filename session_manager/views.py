@@ -415,7 +415,10 @@ class Profile(View):
     def get(self, request, *args, **kwargs):
         template = loader.get_template('session_manager/profile.html')
         context = {
-            'show_username': not settings.MAKE_USERNAME_EMAIL
+            'show_username': not settings.MAKE_USERNAME_EMAIL,
+            'breadcrumbs': [
+                ('Profile', None),
+            ]
         }
         return HttpResponse(template.render(context, request))
 
@@ -428,6 +431,12 @@ class UpdateProfileView(View):
             self.form = UserProfileEmailUsernameForm
         else:
             self.form = UserProfileUsernameForm
+        self.context = {
+            'breadcrumbs': [
+                ('Profile', reverse('session_manager_profile')),
+                ('Contact Information', None)
+            ]
+        }
 
     def get(self, request, *args, **kwargs):
         initial = {
@@ -440,10 +449,10 @@ class UpdateProfileView(View):
             initial['username'] = self.request.user.username
 
         form = self.form(initial=initial)
-        context = {
+        self.context.update({
             'form': form,
-        }
-        return HttpResponse(self.template.render(context, request))
+        })
+        return HttpResponse(self.template.render(self.context, request))
 
     def post(self, request, *args, **kwargs):
         form = self.form(request.POST)
@@ -463,9 +472,9 @@ class UpdateProfileView(View):
             messages.success(request, 'Profile updated.')
             return redirect(reverse('session_manager_profile'))
         else:
-            context = {
+            self.context.update({
                 'form': form,
-            }
+            })
             return HttpResponse(self.template.render(context, request))
 
 

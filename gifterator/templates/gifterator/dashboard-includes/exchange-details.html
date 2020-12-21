@@ -1,7 +1,13 @@
 
 <div class="dashboardcard_title">{{exchange.title}}</div>
+
+{% if exchange in admin_exchanges %}
+<div>
+	<a class="btn btn-sm btn-primary float-right" href="{% url 'gifterator_exchange_admin_dashboard' ex_uuid=exchange.uuid %}">Manage</a>
+</div>
+{% endif %}
 <div class="dashboardcard_subtitle mb-2 text-muted">
-	Created by {{exchange.created_by.get_full_name}}
+	Created by {{exchange.created_by.full_name}}
 </div>
 
 {% if exchange.description %}
