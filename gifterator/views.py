@@ -8,6 +8,9 @@ from django.template import loader
 from django.views import View
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.html import strip_tags
+
+from datetime import datetime
 
 from gifterator.forms import (
     GiftExchangeBaseForm,
@@ -15,6 +18,7 @@ from gifterator.forms import (
     ParticipantDetailsForm,
     ParticipantEmailForm,
     InvitationEmailForm,
+    SendMessageForm,
     UserDefaultForm,
 )
 from gifterator.mailer import GifteratorMailer
@@ -93,11 +97,14 @@ class GiftExchangeDashboard(GifteratorBase):
         admin_exchange_participants = ExchangeParticipant.objects.filter(appuser=self.appuser, is_admin=True)
         participant_exchange_participants = ExchangeParticipant.objects.filter(
             appuser=self.appuser,
-            status='active'
+            status='active',
+            giftexchange__date__gte=datetime.today()
         )
         invited_exchange_participants = ExchangeParticipant.objects.filter(
             appuser=self.appuser,
-            status='invited'
+            status='invited',
+            giftexchange__locked=False,
+            giftexchange__date__gte=datetime.today()
         )
         created_exchanges = GiftExchange.objects.filter(created_by=self.appuser)
         invited_exchanges = [iep.giftexchange for iep in invited_exchange_participants]
@@ -241,7 +248,8 @@ class GiftExchangeAdminDashboard(GifteratorBase):
             'breadcrumbs': [
                 ('Gift Exchanges', reverse('gifterator_dashboard')),
                 ('{} Admin'.format(self.giftexchange.title), None),
-            ]
+            ],
+            'send_message_form': SendMessageForm()
         })
         self.exchange_details_form = GiftExchangeBaseForm
         self.participant_email_form = ParticipantEmailForm
@@ -300,6 +308,17 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
             'status': 'success',
             'html': result_html
         }
+
+    def _get_participant_subset(self, subset_target):
+        if subset_target == 'all':
+            participant_subset = self.giftexchange.exchangeparticipant_set.filter(
+                appuser__user__isnull=False).all()
+        elif subset_target == 'active':
+            participant_subset = self.giftexchange.exchangeparticipant_set.filter(status='active').all()
+        elif subset_target == 'invited':
+            participant_subset = self.giftexchange.exchangeparticipant_set.filter(
+                status='invited', appuser__user__isnull=False).all()
+        return participant_subset
 
     def get(self, request, *args, **kwargs):
         return JsonResponse(self.data)
@@ -436,6 +455,24 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
                 'status': 'success',
                 'html': result_html
             })
+        elif post_target == 'send-bulk-message':
+            message_target = request.POST['target']
+            message_body = strip_tags(request.POST['message'])
+            target_users = self._get_participant_subset(message_target)
+            mailer = GifteratorMailer()
+            mailer.send_admin_message(
+                giftexchange_name=self.giftexchange.title,
+                message_body=message_body,
+                from_user=self.participant,
+                to_users=target_users
+            )
+            self.data.update({
+                'status': 'success',
+                'successMessage': 'Sent an email to {} users'.format(target_users.count()),
+                'html': None,
+            })
+
+
 
         self._refresh_data()
         return JsonResponse(self.data)

@@ -18,6 +18,11 @@
 	</div>
 	<div class="row">
 		<div class="col">
+			<a class="btn btn-primary btn-sm js-modal-trigger" id="send-participant-message" href="">Send a message</a>
+		</div>
+	</div>
+	<div class="row margin-top-1">
+		<div class="col">
 			<h2>
 				<div class="icon icon-person-multi"></div>
 				<div class="icon-text">Participants</div>
@@ -131,4 +136,7 @@
 			</div>
 		</div>
 	</div>
+	
+	{% include 'gifterator/admin_dashboard_includes/send-email-modal.html' %}	
+
 {% endblock %}

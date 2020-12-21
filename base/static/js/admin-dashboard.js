@@ -159,6 +159,25 @@ function enableDetailForm() {
 	});
 }
 
+function bindSendBulkMessage(apiTargetUrl) {
+	$('button#js-send-bulk-message').click(function sendBulkMessage(){
+		var postData = $('form#send_bulk_message').serialize();
+		postResult = doSynchedPost(apiTargetUrl, postData);
+		if (postResult.status == 'success') {
+			successMessage(postResult.successMessage);
+			$('#modal_send-participant-message').modal('hide');
+		}
+	});
+}
+
+function bindModalOpen() {
+	$('a.js-modal-trigger').click(function showModal(event){
+		event.preventDefault();
+		var modalId = 'modal_' + $(this).attr('id');
+		$('#' + modalId).modal('show');
+	});
+}
+
 function refreshDashoardTools(giftExchange) {
 	if( giftExchange.participantsNotified ) {
 		$('div#notify-participants-alert').show();
@@ -220,5 +239,7 @@ $(document).ready(function(){
 	bindRemoveUser(apiTargetUrl);
 	bindAssignmentsFunctions(apiTargetUrl);
 	bindSendSingleSend(apiTargetUrl);
-	setUpDashboard(apiTargetUrl)
+	setUpDashboard(apiTargetUrl);
+	bindModalOpen();
+	bindSendBulkMessage(apiTargetUrl);
 });

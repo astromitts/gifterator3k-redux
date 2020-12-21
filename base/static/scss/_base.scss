@@ -225,6 +225,13 @@ h2 {
 	.as-row {
 		display: table-row;
 	}
+	.as-row-on-small {
+		display: table-row;
+		@media (min-width: #{$screen-md-min}) {
+			display: inline;
+		}
+	}
+
 	.as-cell {
 		display: table-cell;
 		&_xs {
@@ -329,6 +336,12 @@ h2 {
 		}
 	}
 	margin-bottom: 2rem;
+}
+
+.dashboard-icons {
+	&_arrow {
+		width: 1rem;
+	}
 }
 
 .email-preview {

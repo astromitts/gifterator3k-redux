@@ -47,3 +47,28 @@ class GifteratorMailer(SessionManagerEmailer):
             subject,
             html_body
         )
+
+    def send_admin_message(self, giftexchange_name, message_body, from_user, to_users):
+        email_type = 'Bulk admin message'
+        subject = 'A message from {} about the gift exchange "{}"'.format(
+            from_user.full_name, giftexchange_name
+        )
+        self.context.update(
+            {
+                'from_user': from_user,
+                'giftexchange_name': giftexchange_name,
+                'message_body': message_body
+            }
+        )
+        for user in to_users:
+            html_body = render_to_string(
+                'gifterator/emails/admin_message.html',
+                context=self.context
+            )
+            to_email = user.email
+            self.send_email(
+                email_type,
+                to_email,
+                subject,
+                html_body
+            )

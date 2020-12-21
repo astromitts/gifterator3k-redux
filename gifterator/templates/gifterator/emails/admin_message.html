@@ -1,0 +1,9 @@
+{% extends 'session_manager/emails/email_base.html' %}
+{% load apptags %}
+
+{% block email_body %}
+	<p>A message from {{from_user.full_name}} regarding gift exchange {{giftexchange_name}}</p>
+	<div>
+		{{message_body}}
+	</div>
+{% endblock %}

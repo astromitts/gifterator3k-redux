@@ -1,14 +1,13 @@
-{% load apptags %}
+{% load static apptags %}
 
-<table class="table table-striped" id="table_assignment-list">
+<table class="table {% if giftexchange.participants_notified %}table-striped{% endif %}" id="table_assignment-list">
     {% for assignment in assignment_list.all %}
     <tr id="assignment_{{assignment.giver.email}}">
         <td>{{assignment.giver.first_name}} {{assignment.giver.last_name}}</td>
-        <td>gives to</td>
+        <td><img class="dashboard-icons_arrow" src="{% static 'site-images/arrow.png' %}" /></td>
         <td>{{assignment.reciever.first_name}}  {{assignment.reciever.last_name}}</td>
         {% if giftexchange.participants_notified %}
         	<tr>
-	        	<td colspan="2">Mail sent: {{assignment.giver.email_last_sent|format_date_time}}</td>
 		        <td>
 		        	<div class="resend-assignment default-hidden">
 		        		<form method="POST">
@@ -30,6 +29,9 @@
 						</form>
 			        </div>
 		        </td>
+	        	<td colspan="2">
+	        		Mail sent: {{assignment.giver.email_last_sent|format_date_time}}
+	        	</td>
 		    </tr>
     	{% endif %}
     </tr>

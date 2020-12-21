@@ -2,6 +2,7 @@ from django.forms import (
     BooleanField,
     CheckboxInput,
     CharField,
+    ChoiceField,
     DateInput,
     EmailField,
     EmailInput,
@@ -11,6 +12,7 @@ from django.forms import (
     NumberInput,
     Textarea,
     TextInput,
+    Select,
 )
 
 from gifterator.models import (
@@ -130,3 +132,31 @@ class ParticipantEmailForm(Form):
 
 class InvitationEmailForm(Form):
     email = EmailField(widget=EmailInput(attrs={'class': 'form-control'}))
+
+
+class SendMessageForm(Form):
+    js_target = CharField(
+        widget=HiddenInput(attrs={'value': 'send-bulk-message'})
+    )
+    target = ChoiceField(
+        widget=Select(
+            attrs={
+                'class': 'form-control',
+                'id': 'id_bulk_message_target'
+            }
+        ),
+        choices=[
+            ('all', 'all'),
+            ('invited', 'invited'),
+            ('active', 'active')
+        ]
+    )
+    message = CharField(
+        widget=Textarea(
+            attrs={
+                'class': 'form-control',
+                'id': 'id_bulk_message_body'
+            }
+        ),
+        help_text='Plain text only! Any HTML or script tags will be stripped from your message.'
+    )

@@ -203,6 +203,14 @@ h2 {
 .as-table .as-row {
   display: table-row;
 }
+.as-table .as-row-on-small {
+  display: table-row;
+}
+@media (min-width: 768px) {
+  .as-table .as-row-on-small {
+    display: inline;
+  }
+}
 .as-table .as-cell {
   display: table-cell;
 }
@@ -304,6 +312,10 @@ h2 {
 }
 .dashboardcard-userinfo_link {
   padding-top: 1rem;
+}
+
+.dashboard-icons_arrow {
+  width: 1rem;
 }
 
 .email-preview {
