@@ -193,11 +193,12 @@ h2 {
 }
 
 .default-hidden {
-  display: none;
+  display: none !important;
 }
 
 .as-table {
   display: table;
+  border-collapse: collapse;
   width: 100%;
 }
 .as-table .as-row {
@@ -220,6 +221,24 @@ h2 {
 
 .as-header {
   font-weight: bold;
+}
+
+.collapse-on-small {
+  display: none;
+}
+@media (min-width: 768px) {
+  .collapse-on-small {
+    display: inherit;
+  }
+}
+
+.expand-on-small {
+  display: inherit;
+}
+@media (min-width: 768px) {
+  .expand-on-small {
+    display: none;
+  }
 }
 
 .icon-text {
@@ -314,8 +333,11 @@ h2 {
   padding-top: 1rem;
 }
 
-.dashboard-icons_arrow {
-  width: 1rem;
+.tools-icons_arrow {
+  width: 1.5rem;
+}
+.tools-icons_flip90 {
+  transform: rotate(90deg);
 }
 
 .email-preview {

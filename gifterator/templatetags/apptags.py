@@ -14,6 +14,10 @@ def format_date_time(datetime):
     return mark_safe(datetime.strftime('%b %d<br /> %H:%M %p %Z'))
 
 @register.filter
+def as_money(integer):
+    return '${}'.format(integer)
+
+@register.filter
 def display_user_information(information):
     if information:
         return information

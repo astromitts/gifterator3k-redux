@@ -4,7 +4,7 @@
     {% for assignment in assignment_list.all %}
     <tr id="assignment_{{assignment.giver.email}}">
         <td>{{assignment.giver.first_name}} {{assignment.giver.last_name}}</td>
-        <td><img class="dashboard-icons_arrow" src="{% static 'site-images/arrow.png' %}" /></td>
+        <td><img class="tools-icons_arrow" src="{% static 'site-images/arrow.png' %}" /></td>
         <td>{{assignment.reciever.first_name}}  {{assignment.reciever.last_name}}</td>
         {% if giftexchange.participants_notified %}
         	<tr>

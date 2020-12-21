@@ -1,0 +1,116 @@
+{% extends 'base/project_base.html' %}
+{% load static apptags %}
+
+{% block extra_js %}
+	<script type="text/javascript" src="{% static 'js/expandCollapsToggle.js' %}"></script>
+{% endblock %}
+{% block page_content %}
+<div class="row margin-top-1">
+	<div class="col">
+		<h2>{{giftexchange.title}}</h2>
+	</div>
+</div>
+{% with giftexchange as exchange %}
+	{% include 'gifterator/dashboard-includes/exchange-description-box.html'  %}
+	<div class="row margin-top-1">
+		<div class="col">
+			{% include 'gifterator/dashboard-includes/exchange-icon.html' with class='date' text=exchange.date %}
+		</div>
+		<div class="col">
+			{% include 'gifterator/dashboard-includes/exchange-icon.html' with class='location' text=exchange.location %}
+		</div>
+		<div class="col">
+			{% include 'gifterator/dashboard-includes/exchange-icon.html' with class='cart' text=exchange.spending_limit|as_money %}
+		</div>
+	</div>
+{% endwith %}
+{% if giftexchange.participants_notified %}
+{% with assignment.reciever as reciever %}
+	<div class="row margin-top-1">
+		<div class="col">
+			<div class="icon icon-person"></div>
+			<div class="icon-text">Assignment</div>
+		</div>
+	</div>
+	<p class="font-weight-bold margin-top-1">
+		You are getting a gift for {{reciever.full_name}}!
+	</p>
+	<p>{{reciever|display_likes}}</p>
+	<p>{{reciever|display_dislikes}}</p>
+	<p>{{reciever|display_allergies}}</p>
+	{% if reciever.provided_shipping_address %}
+		<p>You can send {{reciever.first_name}}'s gift to:<br />
+		{{reciever.provided_shipping_address}}</p>
+	{% endif %}
+	<p>
+	Please get a gift by {{giftexchange.date}} costing no more than ${{giftexchange.spending_limit}}
+	</p>
+{% endwith %}
+{% endif %}
+
+<div class="row margin-top-2">
+	<div class="col">
+		<div class="icon icon-person-multi"></div>
+		<div class="icon-text">Participants</div>
+	</div>
+</div>
+<div class="expand-on-small margin-top-1">
+	<div class="as-table">
+		{% for participant in giftexchange.exchangeparticipant_set.all %}
+			{% if participant.status == 'active' %}
+			<div class="as-row">
+				<div class="as-cell as-cell_xs">{{participant.full_name}}</div>
+				<div class="as-cell">
+					<button 
+						id="participant-details-toggle_{{participant.pk}}" 
+						class="btn btn-success btn-sm js-expand-collapse-toggle float-right"
+						data-show-target=".participant-details_{{participant.pk}}"
+						data-expanded-text="Collapse"
+						data-collapsed-text="Expand"
+					>
+						Expand
+					</button>
+				</div>
+			</div>
+			<div class="default-hidden as-row participant-details participant-details_{{participant.pk}} ">
+				<div class="as-cell">likes:</div>
+				<div class="as-cell">
+					{{participant.likes}}
+				</div>
+			</div>
+			<div class="default-hidden as-row participant-details participant-details_{{participant.pk}} ">
+				<div class="as-cell">dislikes:</div>
+				<div class="as-cell">
+					{{participant.dislikes}}
+				</div>
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>
+
+<div class="collapse-on-small margin-top-1">
+	<div class="as-table as-table_striped">
+	{% for participant in giftexchange.exchangeparticipant_set.all %}
+		{% if participant.status == 'active' %}
+			<div class="as-row border-bottom">
+				<div class="as-cell">{{participant.full_name}}</div>
+				<div class="as-cell">
+					<div class="as-table">
+						<div class="as-row">
+							<div class="as-cell as-cell_xs">Likes:</div>
+							<div class="as-cell">{{participant.likes}}</div>
+						</div>
+						<div class="as-row">
+							<div class="as-cell as-cell_xs">Dislikes:</div>
+							<div class="as-cell">{{participant.dislikes}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+	{% endfor %}
+	</div>
+</div>
+
+{% endblock %}

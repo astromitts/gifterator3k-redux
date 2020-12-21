@@ -216,11 +216,13 @@ h2 {
 }
 
 .default-hidden {
-	display: none;
+	display: none !important;
 }
+
 
 .as-table {
 	display: table;
+	border-collapse: collapse;
 	width: 100%;
 	.as-row {
 		display: table-row;
@@ -242,6 +244,20 @@ h2 {
 
 .as-header {
 	font-weight: bold;
+}
+
+.collapse-on-small {
+	display: none;
+	@media (min-width: #{$screen-md-min}) {
+		display: inherit;
+	}
+}
+
+.expand-on-small {
+	display: inherit;
+	@media (min-width: #{$screen-md-min}) {
+		display: none;
+	}
 }
 
 .icon-text {
@@ -338,9 +354,12 @@ h2 {
 	margin-bottom: 2rem;
 }
 
-.dashboard-icons {
+.tools-icons {
 	&_arrow {
-		width: 1rem;
+		width: 1.5rem;
+	}
+	&_flip90 {
+		transform: rotate(90deg);
 	}
 }
 

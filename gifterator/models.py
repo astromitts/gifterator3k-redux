@@ -28,6 +28,7 @@ class UserDefault(BaseModel):
     allergies_or_sensitivities = models.TextField(blank=True, null=True)
     shipping_address = models.TextField(blank=True, null=True)
 
+
 @receiver(post_save, sender=AppUser)
 def create_user_default_instance(sender, instance, **kwargs):
     userdefault = UserDefault.objects.filter(appuser=instance).first()
@@ -202,6 +203,14 @@ class ExchangeParticipant(BaseModel):
         if self._shipping_address:
             return self._shipping_address
         return self.appuser.userdefault.shipping_address
+
+    @property
+    def provided_shipping_address(self):
+        if self._shipping_address:
+            return self._shipping_address
+        else:
+            return None
+
 
     @classmethod
     def create(cls, appuser, giftexchange, is_admin=False, status='active'):

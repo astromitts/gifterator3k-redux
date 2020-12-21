@@ -178,51 +178,58 @@ function bindModalOpen() {
 	});
 }
 
+function hide(element) {
+	element.addClass('default-hidden');
+}
+function show(element) {
+	element.removeClass('default-hidden');
+}
+
 function refreshDashoardTools(giftExchange) {
 	if( giftExchange.participantsNotified ) {
-		$('div#notify-participants-alert').show();
-		$('div#notify-participants').hide();
-		$('div#id_search-users').hide();
-		$('input#id_set-assignments').hide();
-		$('div#participant-list').hide();
-		$('div#assignment-list').show();
-		$('input#id_unset-assignments').hide();
-		$('input#id_lock-assignments').hide();
-		$('div.resend-assignment').show();
+		show($('div#notify-participants-alert'));
+		show($('div.resend-assignment'));
+		show($('div#assignment-list'));
+		hide($('div#notify-participants'));
+		hide($('div#id_search-users'));
+		hide($('input#id_set-assignments'));
+		hide($('div#participant-list'));
+		hide($('input#id_unset-assignments'));
+		hide($('input#id_lock-assignments'));
 	} else if ( giftExchange.hasAssignments ) {
-		$('div#participant-list').hide();
-		$('div#assignment-list').show();
-		$('input#id_unset-assignments').show();
+		show($('div#assignment-list'));
+		show($('input#id_unset-assignments'));
+		hide($('div#id_search-users'));
+		hide($('div#participant-list'));
 		$('input#id_set-assignments').val('Re-set Assignments');
-		$('div#id_search-users').hide();
 		if ( giftExchange.locked ) {
 			// disableDetailForm();
-			$('input#id_set-assignments').hide();
-			$('input#id_lock-assignments').hide();
-			$('div#notify-participants').show();
+			hide($('input#id_set-assignments'));
+			hide($('input#id_lock-assignments'));
+			show($('div#notify-participants'));
 		} else {
 			// enableDetailForm();
-			$('input#id_unset-assignments').show();
-			$('input#id_lock-assignments').show();
-			$('div#notify-participants').hide();
+			show($('input#id_unset-assignments'));
+			show($('input#id_lock-assignments'));
+			hide($('div#notify-participants'));
 		}
 	} else {
 		// enableDetailForm();
 		if ( giftExchange.participantCount >= 3 ) {
-			$('input#id_set-assignments').show();
-			$('div#notify-participant-count').hide();
+			show($('input#id_set-assignments'));
+			hide($('div#notify-participant-count'));
 		} else {
-			$('input#id_set-assignments').hide();
-			$('div#notify-participant-count').show();
+			hide($('input#id_set-assignments'));
+			show($('div#notify-participant-count'));
 		}
-		$('div#notify-participants').hide();
-		$('div#notify-participants-alert').hide();
-		$('div#id_search-users').show();
+		show($('div#id_search-users'));
+		show($('div#participant-list'));
+		hide($('div#notify-participants'));
+		hide($('div#notify-participants-alert'));
+		hide($('div#assignment-list'));
+		hide($('input#id_unset-assignments'));
+		hide($('input#id_lock-assignments'));
 		$('input#id_set-assignments').val('Set Assignments');
-		$('div#participant-list').show();
-		$('div#assignment-list').hide();
-		$('input#id_unset-assignments').hide();
-		$('input#id_lock-assignments').hide();
 	}
 }
 

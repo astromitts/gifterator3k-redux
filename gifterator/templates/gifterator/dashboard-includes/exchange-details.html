@@ -1,5 +1,6 @@
+{% load apptags %}
 
-<div class="dashboardcard_title">{{exchange.title}}</div>
+<div class="dashboardcard_title"><a href="{% url 'gifterator_exchange_detail' ex_uuid=exchange.uuid %}">{{exchange.title}}</a></div>
 
 {% if exchange in admin_exchanges %}
 <div>
@@ -11,34 +12,16 @@
 </div>
 
 {% if exchange.description %}
-	<div class="dashboardcard-description as-table">
-		<div class="dashboardcard-description_text as-row">
-			<div class=" as-cell">
-				<div class="icon icon-heart" style="margin: .5rem;"></div>
-			</div>
-			<div class="icon-text font-italic as-cell">	
-				"{{exchange.description}}
-			</div>
-		</div>
-	</div>
+	{% include 'gifterator/dashboard-includes/exchange-description-box.html'  %}
 {% endif %}
 
 <div class="dashboardcard_subtitle mb-2 text-muted">
-	<div class="icon icon-date"></div>
-	<div class="icon-text">
-		{{exchange.date}}
-	</div>
+	{% include 'gifterator/dashboard-includes/exchange-icon.html' with class='date' text=exchange.date %}
 </div>
 <div class="dashboardcard_subtitle mb-2 text-muted">
-	<div class="icon icon-cart"></div>
-	<div class="icon-text">
-		Limit ${{exchange.spending_limit}}
-	</div>
+	{% include 'gifterator/dashboard-includes/exchange-icon.html' with class='cart' text=exchange.spending_limit|as_money %}
 </div>
 
 <div class="dashboardcard_subtitle mb-2 text-muted">
-	<div class="icon icon-location"></div>
-	<div class="icon-text">
-		{{exchange.location}}
-	</div>
+	{% include 'gifterator/dashboard-includes/exchange-icon.html' with class='location' text=exchange.location %}
 </div>

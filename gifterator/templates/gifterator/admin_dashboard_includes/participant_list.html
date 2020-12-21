@@ -39,7 +39,7 @@
 	<div class="table-responsive-sm">
 		<table class="table" id="table_participant-list">
 			{% for participant in invited_list.all %}
-			<tr id="participant_{{participant.user.email}}">
+			<tr id="participant_{{participant.appuser.email}}">
 				<td>
 					<form method="POST" action="">
 						{% csrf_token %}
@@ -47,7 +47,7 @@
 							type="hidden" 
 							id="id_user-email" 
 							name="user-email" 
-							value="{{participant.user.email}}" />
+							value="{{participant.appuser.email}}" />
 						<input 
 							type="hidden" 
 							id="id_js_target" 
