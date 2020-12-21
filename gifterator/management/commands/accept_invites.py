@@ -69,7 +69,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         uuid = options['ex_uuid']
         exchange = GiftExchange.objects.get(uuid=uuid)
-        invitees = exchange.participant_set.filter(
+        invitees = exchange.exchangeparticipant_set.filter(
             appuser__user__email__icontains='@example.com').all()
         for invitee in invitees:
             invitee.status = 'active'
