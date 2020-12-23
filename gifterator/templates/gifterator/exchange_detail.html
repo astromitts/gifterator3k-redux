@@ -158,30 +158,24 @@
 		{% for participant in giftexchange.exchangeparticipant_set.all %}
 			{% if participant.status == 'active' %}
 			<div class="as-row">
-				<div class="as-cell as-cell_xs">{{participant.full_name}}</div>
-				<div class="as-cell">
-					<button 
-						id="participant-details-toggle_{{participant.pk}}" 
-						class="btn btn-success btn-sm js-expand-collapse-toggle float-right"
-						data-show-target=".participant-details_{{participant.pk}}"
-						data-expanded-text="Collapse"
-						data-collapsed-text="Expand"
-					>
-						Expand
-					</button>
-				</div>
+				<div class="as-cell as-cell_xs font-weight-bold">{{participant.full_name}}</div>
+				<div class="as-cell"></div>
 			</div>
-			<div class="default-hidden as-row participant-details participant-details_{{participant.pk}} ">
+			<div class="as-row">
 				<div class="as-cell">likes:</div>
 				<div class="as-cell">
 					{{participant.likes}}
 				</div>
 			</div>
-			<div class="default-hidden as-row participant-details participant-details_{{participant.pk}} ">
+			<div class="as-row">
 				<div class="as-cell">dislikes:</div>
 				<div class="as-cell">
 					{{participant.dislikes}}
 				</div>
+			</div>
+			<div class="as-row border-bottom">
+				<div class="as-cell"></div>
+				<div class="as-cell"></div>
 			</div>
 			{% endif %}
 		{% endfor %}
@@ -193,7 +187,7 @@
 	{% for participant in giftexchange.exchangeparticipant_set.all %}
 		{% if participant.status == 'active' %}
 			<div class="as-row border-bottom">
-				<div class="as-cell">{{participant.full_name}}</div>
+				<div class="as-cell font-weight-bold">{{participant.full_name}}</div>
 				<div class="as-cell">
 					<div class="as-table">
 						<div class="as-row">
