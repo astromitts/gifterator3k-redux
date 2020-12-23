@@ -2,11 +2,16 @@
 {% load static apptags %}
 
 {% block extra_js %}
-	<script type="text/javascript" src="{% static 'js/giftspoUtils.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/ajaxFormHandler.js' %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			bindAjaxFormSubmit('giftspo_item_form');
+		});
+	</script>
 {% endblock %}
 
 {% block page_content %}
 	{% if form %}
-		{% include 'session_manager/generic_form.html' with form=form %}
+		{% include 'session_manager/generic_form.html' with form=form form_class='ajax_submit' form_id='giftspo_item_form' %}
 	{% endif %}
 {% endblock %}

@@ -2,11 +2,9 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from gifterator.views.user_views import *
 from gifterator.views.exchange_admin_views import *
-from gifterator.views.base_views import MetaDataFetcher
 
 urlpatterns = [
     path('', GiftExchangeDashboard.as_view(), name='gifterator_dashboard'),
-    path('tools/metadatafetcher/', csrf_exempt(MetaDataFetcher.as_view()), name='metadata_fetcher'),
     path('profile/default-settings/', UserDefaultManager.as_view(), name='gifterator_user_manager_defaults'),
     path('profile/giftspo-lists/', GiftspoListDashboard.as_view(), name='gifterator_user_giftspo_dashboard'),
     path('profile/giftspo-lists/create/', CreateGiftspoView.as_view(), name='gifterator_user_giftspo_create'),

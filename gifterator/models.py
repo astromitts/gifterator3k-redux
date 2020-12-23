@@ -298,9 +298,9 @@ class GiftListItem(BaseModel):
     uuid = models.UUIDField(default=uuid.uuid4)
     giftlist = models.ForeignKey(GiftList, on_delete=models.CASCADE)
     web_link = models.URLField(blank=True, null=True)
-    nickname = models.CharField(max_length=250)
+    name = models.CharField(max_length=250)
     description = models.TextField(blank=True,  null=True)
-    meta = models.JSONField(default=dict)
+    meta = models.JSONField(default=dict, blank=True)
 
 
 class ExchangeGiftListLink(BaseModel):

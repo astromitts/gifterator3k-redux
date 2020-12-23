@@ -23,6 +23,9 @@ ol.breadcrumb {
 	background-color: #FFFFFF;
 }
 
+li.list-group-item {
+	border: 0;
+}
 
 .navbar-light {
 	background-color: $app-primary !important;
@@ -107,7 +110,12 @@ img#header-image{
 		}
 	}
 }
-
+.col-sm-margin-top {
+	margin-top: 1rem;
+ 	@media (min-width: #{$screen-md-min}) {	
+ 		margin-top: 0;
+ 	}
+}
 
 /* Django overrides */
 
@@ -320,6 +328,9 @@ h2 {
 	}
 	&-info {
 		background-image: url("vendors/miscellaneous-elements/png/010-information.png")
+	}
+	&-inline-small {
+		width: 1.3rem;
 	}
 }
 

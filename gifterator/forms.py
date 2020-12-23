@@ -249,15 +249,17 @@ class CreateGiftspoForm(ModelForm):
         }
 
 class GiftspoItemForm(ModelForm):
+    submit_done_url = CharField(widget=HiddenInput())
     class Meta:
         model = GiftListItem
-        fields = ['web_link', 'nickname', 'description']
+        fields = ['web_link', 'name', 'description', 'meta']
         widgets = {
             'web_link': URLInput(attrs={'class': 'form-control'}),
-            'nickname': TextInput(attrs={'class': 'form-control'}),
+            'name': TextInput(attrs={'class': 'form-control'}),
             'description': Textarea(attrs={
                 'class': 'form-control',
                 'autocomplete': 'off',
                 'rows': 5
-            })
+            }),
+            'meta': HiddenInput()
         }

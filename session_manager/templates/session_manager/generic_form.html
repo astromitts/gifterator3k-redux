@@ -1,6 +1,12 @@
+{% load apptags %}
 {% block form %}
 	{% if form %}
-		<form class="form" method="POST" action="{{form_action}}">
+		<form
+			method="POST" 
+			action="{{form_action}}"
+			id="{% if form_id %}{{form_id}}{% else %}id_form{% endif %}"
+			class="form {% if form_class %} {{form_class}}{% endif %}"
+		>
 		{% csrf_token %}
 		<table class="table">
 			{% if form %}

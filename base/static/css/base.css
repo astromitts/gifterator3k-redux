@@ -4,6 +4,10 @@ ol.breadcrumb {
   background-color: #FFFFFF;
 }
 
+li.list-group-item {
+  border: 0;
+}
+
 .navbar-light {
   background-color: #21618C !important;
   color: #000000;
@@ -87,6 +91,15 @@ img#header-image {
 .btn-danger:hover {
   background-color: #9C3640;
   border-color: #9C3640;
+}
+
+.col-sm-margin-top {
+  margin-top: 1rem;
+}
+@media (min-width: 768px) {
+  .col-sm-margin-top {
+    margin-top: 0;
+  }
 }
 
 /* Django overrides */
@@ -303,6 +316,9 @@ h2 {
 }
 .icon-info {
   background-image: url("vendors/miscellaneous-elements/png/010-information.png");
+}
+.icon-inline-small {
+  width: 1.3rem;
 }
 
 .dashboardcard {

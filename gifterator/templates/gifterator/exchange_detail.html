@@ -24,29 +24,128 @@
 		</div>
 	</div>
 {% endwith %}
-{% if giftexchange.participants_notified %}
-{% with assignment.reciever as reciever %}
-	<div class="row margin-top-1">
-		<div class="col">
-			<div class="icon icon-person"></div>
-			<div class="icon-text">Assignment</div>
+
+		<div class="row margin-top-1">
+			{% if giftexchange.participants_notified %}
+				{% with assignment.reciever as reciever %}
+					<div class="col-sm-6">
+						<div class="icon icon-person"></div>
+						<div class="icon-text">Assignment</div>
+						<div>
+							<p class="font-weight-bold margin-top-1">
+								You are getting a gift for {{reciever.full_name}}!
+							</p>
+							<p>{{reciever|display_likes}}</p>
+							<p>{{reciever|display_dislikes}}</p>
+							<p>{{reciever|display_allergies}}</p>
+							{% if reciever.provided_shipping_address %}
+								<p>You can send {{reciever.first_name}}'s gift to:<br />
+								{{reciever.provided_shipping_address}}</p>
+							{% endif %}
+							<p>
+							Please get a gift by {{giftexchange.date}} costing no more than ${{giftexchange.spending_limit}}
+							</p>
+						</div>
+						{% if assignment_lists %}
+							<div>
+								<p class="font-weight-bold">Need some ideas? Here's some stuff that {{reciever.first_name}} wants:</p>
+								<ul class="list-group"> 
+								{% for list in assignment_lists %}
+									{% for item in list.giftlistitem_set.all %}
+									<li class="list-group-item">
+										{% if item.web_link %}
+											<a href="{{item.web_link}}" target="_blank">
+												{{item.name}} <img class="icon-inline-small" src="{% static 'site-images/offsite-link-icon.png' %}" />
+											</a>
+										{% else %}
+											{{item.name}}
+										{% endif %}
+										{% if item.description %}
+										<p>
+											<span class="helptext">{{item.description}}</span></p>
+										{% endif %}
+									</li>
+									{% endfor %}
+								{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
+					</div>
+				{% endwith %}
+			{% endif %}
+			<div class="col-sm-6 col-sm-margin-top">
+				<div class="icon icon-person"></div>
+				<div class="icon-text">Your Details</div>
+				<p>{{participant|display_likes}}</p>
+				<p>{{participant|display_dislikes}}</p>
+				<p>{{participant|display_allergies}}</p>
+				{% if participant.provided_shipping_address %}
+					<p>You can send {{participant.first_name}}'s gift to:<br />
+					{{participant.provided_shipping_address}}</p>
+				{% endif %}
+				<div>
+					{% if not linked_giftspo_lists %}
+					<div class="alert alert-warning">
+						You don't have any Giftspo lists linked to this gift exchange. Help your giver out by linking a Giftspo list!
+					</div>
+					{% endif %}
+					<table class="table" id="linked-lists">
+						{% for list_link in linked_giftspo_lists %}
+							<tr>
+								<td>{{list_link.giftlist.nickname}}</td>
+								<td>
+									<form method="POST" action="">
+										{% csrf_token %}
+										<input type="hidden" id="id_linked-list" name="linked-list" value="{{list_link.pk}}" />
+										<input 
+											type="submit" 
+											id="id_remove-list"
+											class="btn btn-danger btn-sm"
+											name="remove-list"
+											value="Remove" />
+									</form>
+								</td>
+								<td>
+									<a 
+										href="{% url 'gifterator_user_giftspo_edit' list_uuid=list_link.giftlist.uuid %}"
+										class="btn btn-primary btn-sm"
+									>Edit</a>
+								</td>
+							</tr>
+						{% endfor %}
+						{% if available_lists %}
+						<form method="POST" action="">
+							<tr>
+								<td colspan="2">
+									{% csrf_token %}
+									<select id="id_list" name="list" class="form-control">
+										{% for available_list in available_lists %}
+										<option value="{{available_list.pk}}">
+											{{available_list.nickname}}
+										</option>
+										{% endfor %}
+									</select>
+								</td>
+								<td>
+									<input 
+										type="submit" 
+										id="id_link-list"
+										class="btn btn-success btn-sm"
+										name="link-list"
+										value="Link" />
+								</td>
+							</tr>
+						</form>
+						{% endif %}
+						<tr>
+							<td colspan="100%">
+								<a href="{% url 'gifterator_user_giftspo_dashboard' %}">Manage Giftspo Lists</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
 		</div>
-	</div>
-	<p class="font-weight-bold margin-top-1">
-		You are getting a gift for {{reciever.full_name}}!
-	</p>
-	<p>{{reciever|display_likes}}</p>
-	<p>{{reciever|display_dislikes}}</p>
-	<p>{{reciever|display_allergies}}</p>
-	{% if reciever.provided_shipping_address %}
-		<p>You can send {{reciever.first_name}}'s gift to:<br />
-		{{reciever.provided_shipping_address}}</p>
-	{% endif %}
-	<p>
-	Please get a gift by {{giftexchange.date}} costing no more than ${{giftexchange.spending_limit}}
-	</p>
-{% endwith %}
-{% endif %}
 
 <div class="row margin-top-2">
 	<div class="col">
