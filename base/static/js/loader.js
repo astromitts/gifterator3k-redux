@@ -1,7 +1,7 @@
 function showLoader() {
-	$('div#loader').show();
+	$('div#loader').removeClass('default-hidden');
 }
 
 function hideLoader() {
-	$('div#loader').hide();
+	$('div#loader').addClass('default-hidden');
 }

@@ -1,54 +1,19 @@
-function doSynchedPost(targetUrl, postData) {
-	var resultData;
-	showLoader();
-	$.ajax({
-		method: 'POST',
-		url: targetUrl,
-		dataType: 'json',
-		data: postData,
-		async: false,
-		success: function successFunction(data) {
-			resultData = data;
-		}
-	});
-	setTimeout(function () {
-		hideLoader();
-    }, 500);
-	return resultData;
-}
-
-function doSynchedGet(targetUrl) {
-	var resultData;
-	showLoader();
-	$.ajax({
-		method: 'GET',
-		url: targetUrl,
-		dataType: 'json',
-		async: false,
-		success: function successFunction(data) {
-			resultData = data;
-		}
-	});
-	
-	setTimeout(function () {
-		hideLoader();
-    }, 500);
-	return resultData;
-}
-
-
 function bindUpdateDetails(apiTargetUrl) {
 	var postResult;
 	$('input#id_update-details').click(function updateDetails(event) {
 		event.preventDefault();
 		postData = $(this).closest('form').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			successMessage(postResult.message);
-			refreshDashoardTools(postResult.giftExchange);
-		} else {
-			errorMessage(postResult.message);
-		}
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData, 
+			function doCallback(postData){
+				if (postResult.status == 'success') {
+					successMessage(postResult.message);
+					refreshDashoardTools(postResult.giftExchange);
+				} else {
+					errorMessage(postResult.message);
+				}
+			});
 	});
 }
 
@@ -57,13 +22,18 @@ function bindRemoveUser(apiTargetUrl) {
 	$('input.js-remove-user').click(function removeUser(event){
 		event.preventDefault();
 		postData = $(this).closest('form').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			$(this).closest('tr').remove();
-			refreshDashoardTools(postResult.giftExchange);
-		} else {
-			errorMessage(postResult.message);
-		}
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData,
+			function doCallback(postResult) {
+				if (postResult.status == 'success') {
+					$(this).closest('tr').remove();
+					refreshDashoardTools(postResult.giftExchange);
+				} else {
+					errorMessage(postResult.message);
+				}
+			}
+		);
 	});	
 }
 
@@ -72,18 +42,23 @@ function bindAddFromSearch(apiTargetUrl) {
 	$('input.js-add-user').click(function addUser(event){
 		event.preventDefault();
 		postData = $(this).closest('form').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			$('div#participant-list').html(postResult.html);
-			bindRemoveUser(apiTargetUrl);
-			$(this).closest('tr').remove();
-			refreshDashoardTools(postResult.giftExchange);
-			if (PREVIEW_EMAILS_IN_APP == 'True') {
-				window.open(postResult.postProcessUrl, '_blank');
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData,
+			function doCallback(postResult) {	
+				if (postResult.status == 'success') {
+					$('div#participant-list').html(postResult.html);
+					bindRemoveUser(apiTargetUrl);
+					$(this).closest('tr').remove();
+					refreshDashoardTools(postResult.giftExchange);
+					if (PREVIEW_EMAILS_IN_APP == 'True') {
+						window.open(postResult.postProcessUrl, '_blank');
+					}
+				} else {
+					errorMessage(postResult.message);
+				}
 			}
-		} else {
-			errorMessage(postResult.message);
-		}
+		);
 	});
 }
 
@@ -93,14 +68,19 @@ function bindEmailSearch(apiTargetUrl) {
 	$('input#id_email-search').click(function doUserSearch(event) {
 		event.preventDefault();
 		postData = $(this).closest('form').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			$('div#search-results').html(postResult.html);
-			bindAddFromSearch(apiTargetUrl);
-			refreshDashoardTools(postResult.giftExchange);
-		} else {
-			errorMessage(postResult.message);
-		}
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData,
+			function doCallback(postResult) {
+				if (postResult.status == 'success') {
+					$('div#search-results').html(postResult.html);
+					bindAddFromSearch(apiTargetUrl);
+					refreshDashoardTools(postResult.giftExchange);
+				} else {
+					errorMessage(postResult.message);
+				}
+			}
+		);
 	});
 }
 
@@ -110,16 +90,21 @@ function bindAssignmentsFunctions(apiTargetUrl) {
 	$('input.js-assignment-control').click(function doAssignmentAction(event){
 		event.preventDefault();
 		postData = $(this).closest('form').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			if ( postResult.html ) {
-				$('div#assignment-list').html(postResult.html);
-				bindSendSingleSend(apiTargetUrl);
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData,
+			function doCallback(postResult) {
+				if (postResult.status == 'success') {
+					if ( postResult.html ) {
+						$('div#assignment-list').html(postResult.html);
+						bindSendSingleSend(apiTargetUrl);
+					}
+					refreshDashoardTools(postResult.giftExchange);
+				} else {
+					errorMessage(postResult.message);
+				}
 			}
-			refreshDashoardTools(postResult.giftExchange);
-		} else {
-			errorMessage(postResult.message);
-		}
+		);
 	});
 }
 
@@ -128,14 +113,19 @@ function bindSendSingleSend(apiTargetUrl) {
 	$('input.js-single-notify').click(function notifyUser(event){
 		event.preventDefault();
 		postData = $(this).closest('form').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			$('div#assignment-list').html(postResult.html);
-			bindSendSingleSend(apiTargetUrl);
-			refreshDashoardTools(postResult.giftExchange);
-		} else {
-			errorMessage(postResult.message);
-		}
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData,
+			function doCallback(postResult) {
+				if (postResult.status == 'success') {
+					$('div#assignment-list').html(postResult.html);
+					bindSendSingleSend(apiTargetUrl);
+					refreshDashoardTools(postResult.giftExchange);
+				} else {
+					errorMessage(postResult.message);
+				}	
+			}
+		);
 	});	
 }
 
@@ -162,11 +152,16 @@ function enableDetailForm() {
 function bindSendBulkMessage(apiTargetUrl) {
 	$('button#js-send-bulk-message').click(function sendBulkMessage(){
 		var postData = $('form#send_bulk_message').serialize();
-		postResult = doSynchedPost(apiTargetUrl, postData);
-		if (postResult.status == 'success') {
-			successMessage(postResult.successMessage);
-			$('#modal_send-participant-message').modal('hide');
-		}
+		postResult = doASynchedPost(
+			apiTargetUrl, 
+			postData,
+			function doCallback (postResult) {	
+				$('#modal_send-participant-message').modal('hide');
+				if (postResult.status == 'success') {
+					successMessage(postResult.successMessage);
+				}
+			}
+		);
 	});
 }
 
@@ -234,8 +229,13 @@ function refreshDashoardTools(giftExchange) {
 }
 
 function setUpDashboard(apiTargetUrl) {
-	getResult = doSynchedGet(apiTargetUrl);
-	refreshDashoardTools(getResult.giftExchange);
+	getResult = doASynchedGet(
+		apiTargetUrl,
+		function doCallback(getResult) {
+			refreshDashoardTools(getResult.giftExchange);
+		}
+	);
+	
 }
 
 

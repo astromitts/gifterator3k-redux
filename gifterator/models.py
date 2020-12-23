@@ -38,7 +38,7 @@ def create_user_default_instance(sender, instance, **kwargs):
 
 class GiftExchange(BaseModel):
     uuid = models.UUIDField(default=uuid.uuid4)
-    title = models.CharField(max_length=250, unique=True)
+    title = models.CharField(max_length=250)
     created_by = models.ForeignKey(AppUser, null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateField(null=True, blank=True)
     location = models.TextField(null=True, blank=True)
@@ -47,6 +47,9 @@ class GiftExchange(BaseModel):
     exchange_in_person = models.BooleanField(default=True)
     locked = models.BooleanField(default=False)
     participants_notified = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ['title', 'created_by']
 
     def __str__(self):
         return '<GiftExchange: {}, title: {}>'.format(self.uuid, self.title)
@@ -271,3 +274,35 @@ class ExchangeAssignment(BaseModel):
     giver = models.ForeignKey(ExchangeParticipant, on_delete=models.CASCADE, related_name='giftexchange_giver')
     reciever = models.ForeignKey(ExchangeParticipant, on_delete=models.CASCADE, related_name='giftexchange_reciever')
 
+
+class GiftList(BaseModel):
+    uuid = models.UUIDField(default=uuid.uuid4)
+    appuser = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=250)
+    is_default = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        current_default = GiftList.objects.filter(
+            appuser=self.appuser, is_default=True).exclude(pk=self.pk)
+        if self.is_default:
+            current_default.all().update(is_default=False)
+        elif current_default.count() == 0:
+            self.is_default = True
+        super(GiftList, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ['appuser', 'nickname']
+
+
+class GiftListItem(BaseModel):
+    uuid = models.UUIDField(default=uuid.uuid4)
+    giftlist = models.ForeignKey(GiftList, on_delete=models.CASCADE)
+    web_link = models.URLField(blank=True, null=True)
+    nickname = models.CharField(max_length=250)
+    description = models.TextField(blank=True,  null=True)
+    meta = models.JSONField(default=dict)
+
+
+class ExchangeGiftListLink(BaseModel):
+    giftlist = models.ForeignKey(GiftList, on_delete=models.CASCADE)
+    participant = models.ForeignKey(ExchangeParticipant, on_delete=models.CASCADE)

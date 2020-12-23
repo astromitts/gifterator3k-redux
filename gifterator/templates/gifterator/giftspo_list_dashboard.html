@@ -1,0 +1,108 @@
+{% extends 'base/project_base.html' %}
+
+{% block page_content %}
+	{% with giftspo_description='What is a giftspo list? It is a list of things you like or might want from some one as a gift. It can be used for people in gift exchanges to figure out exactly what to get you or to give them inspiration based on things you like.' %}
+	<div class="row">
+		<div class="col">
+			<a href="{% url 'gifterator_user_giftspo_create' %}" class="btn btn-success">Start a Giftspo List</a>
+		</div>
+	</div>
+	{% if not giftspo_lists %}
+		<div class="row">
+			<div class="col">
+				<div class="alert alert-warning">
+					You don't have any Giftspo lists yet!<br />
+					{{giftspo_description}}
+					<br /><br />
+					<a href="{% url 'gifterator_user_giftspo_create' %}" class="btn btn-success">Start a Giftspo List</a>
+				</div>
+			</div>
+		</div>
+	{% else %}
+		<div class="row">
+			<div class="col">
+				<div class="alert alert-warning">
+					{{giftspo_description}}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	{% endwith %}
+	{% if giftspo_lists %}
+		<div class="row margin-top-1">
+			<div class="col">
+				<h2>Your Giftspo Lists</h2>
+			</div>
+		</div>
+		{% for giftlist in giftspo_lists %}
+			<div class="row margin-top-1">
+				<div class="col">
+					<h3>{{giftlist.nickname}}</h3>
+				</div>
+				<div class="col">
+					<a class="btn btn-primary float-right"
+						href="{% url 'gifterator_user_giftspo_edit' list_uuid=giftlist.uuid%}">Edit List</a>
+				</div>
+				<div class="col">
+					<a class="btn btn-danger float-right"
+						href="{% url 'gifterator_user_giftspo_delete' list_uuid=giftlist.uuid%}">Delete List</a>
+				</div>
+			</div>
+			{% if not giftlist.giftlistitem_set.count > 0 %}
+				<div class="row margin-top-1">
+					<div class="col">
+						<div class="alert alert-danger">
+							You don't have any items in this list. <a href="{% url 'gifterator_user_giftspo_additem' list_uuid=giftlist.uuid %}">
+									Add items</a>.
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% if giftlist.giftlistitem_set.count > 0 %}
+			<div class="row margin-top-1">
+				<div class="col">
+						<table class="table">
+							{% for item in giftlist.giftlistitem_set.all %}
+							<tr>
+								<td>{{item.nickname}}</td>
+								<td>
+									{% if item.description %}
+										{{item.description}}
+									{% else %}
+										<span class="helptext">no description provided</span>
+									{% endif %}
+								</td>
+								<td>
+									{% if item.web_link %}
+										<a href="{{item.web_link}}" target="_blank">{{item.web_link}}</a>
+									{% else %}
+										<span class="helptext">no web link provided</span>
+									{% endif %}
+								</td>
+								<td>
+									<a type="submit" class="btn btn-primary" 
+										href="{% url 'gifterator_user_giftspo_edititem' item_uuid=item.uuid list_uuid=giftlist.uuid %}" />
+										edit</a>
+								</td>
+								<td>
+									<form method="POST" action="{% url 'gifterator_user_giftspo_deleteitem' item_uuid=item.uuid list_uuid=giftlist.uuid %}">
+										{% csrf_token %}
+										<input type="submit" class="btn btn-danger" value="delete" />
+									</form>
+								</td>
+							</tr>
+							{% endfor %}
+							<tr class="border-bottom">
+								<td colspan="100%">
+									<a class="btn btn-success float-right" 
+										href="{% url 'gifterator_user_giftspo_additem' list_uuid=giftlist.uuid %}">
+									Add items</a>
+								</td>
+							</tr>
+						</table>
+					{% endif %}
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}

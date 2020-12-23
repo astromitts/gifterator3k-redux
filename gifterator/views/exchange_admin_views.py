@@ -108,15 +108,13 @@ class GiftExchangeAdminDashboard(GifteratorBase):
         })
         self.exchange_details_form = GiftExchangeBaseForm
         self.participant_email_form = ParticipantEmailForm
-        exchange_details_form = self.exchange_details_form(
-            initial={
-                'title': self.giftexchange.title,
-                'description': self.giftexchange.description,
-                'location': self.giftexchange.location,
-                'date': self.giftexchange.date,
-                'spending_limit': self.giftexchange.spending_limit,
-                'exchange_in_person': self.giftexchange.exchange_in_person,
+        self.non_model_initial = {
+                'created_by_pk': self.giftexchange.created_by.pk,
+                'giftexchange_pk': self.giftexchange.pk,
             }
+        exchange_details_form = self.exchange_details_form(
+            giftexchange=self.giftexchange,
+            non_model_initial=self.non_model_initial
         )
         participant_email_form = self.participant_email_form
         self.context['pending_count'] = self.giftexchange.exchangeparticipant_set.filter(status='pending').count()
@@ -131,7 +129,7 @@ class GiftExchangeAdminDashboard(GifteratorBase):
         return HttpResponse(self.template.render(self.context, request))
 
 
-class GiftExchangeAdminDashboardApi(GifteratorBase):
+class GiftExchangeAdminDashboardApi(GiftExchangeAdminDashboard):
     def setup(self, request, *args, **kwargs):
         super(GiftExchangeAdminDashboardApi, self).setup(request, *args, **kwargs)
         self.data = {
@@ -142,7 +140,6 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
                 'participantsNotified': self.giftexchange.participants_notified,
             }
         }
-        self.exchange_details_form = GiftExchangeBaseForm
         self.participant_email_form = ParticipantEmailForm
 
     def _refresh_data(self):
@@ -234,7 +231,11 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
                 participant.delete()
             self.data.update(self._render_participant_list(request))
         elif post_target == 'update-details':
-            exchange_details_form = self.exchange_details_form(request.POST)
+            exchange_details_form = self.exchange_details_form(
+                self.giftexchange,
+                self.non_model_initial,
+                request.POST,
+            )
             if exchange_details_form.is_valid():
                 post_data = {field: str(value) for field, value in request.POST.items()}
                 for field in GiftExchange.boolean_fields():
@@ -248,9 +249,14 @@ class GiftExchangeAdminDashboardApi(GifteratorBase):
                     'message': 'Updated gift exchange details'
                 })
             else:
+                error_messages = []
+                for field, message_list in exchange_details_form.errors.items():
+                    error_messages.append('<strong>{}</strong><br /> {}'.format(
+                        field, '<br />'.join(message_list)
+                    ))
                 self.data.update({
                     'status': 'error',
-                    'message': 'Form input invalid'
+                    'message': '<br />'.join(error_messages)
                 })
         elif post_target == 'set-assignments':
             self.giftexchange.generate_assignemnts(override_lock=False)

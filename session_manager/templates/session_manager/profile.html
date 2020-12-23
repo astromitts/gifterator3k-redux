@@ -5,6 +5,9 @@
 			<div><a class="btn btn-primary" href="{% url 'session_manager_profile_reset_password' %}">Reset password</a></div>
 			<div><a class="btn btn-primary margin-top-1" href="{% url 'session_manager_logout' %}">Log out</a></div>
 		</div>
+		<div class="col">
+			<div class="float-right"><a class="btn btn-primary" href="{% url 'gifterator_user_giftspo_dashboard' %}">My Giftspo Lists</a></div>
+		</div>
 	</div>
 	<div class="row margin-top-1">
 		<div class="col">
@@ -28,12 +31,9 @@
 					<div class="as-cell">Email:</div> 
 					<div class="as-cell">{{request.user.email}}</div>
 				</div>
-				<div class="as-row">
-					<div class="as-cell"></div> 
-					<div class="as-cell">
-						<a href="{% url 'session_manager_profile_update' %}" class="btn btn-primary float-right">Update</a>
-					</div>
-				</div>
+			</div>
+			<div class="margin-top-1">
+				<a href="{% url 'session_manager_profile_update' %}" class="btn btn-primary">Update</a>
 			</div>
 		</div>
 		<div class="col margin-top-1">
@@ -56,12 +56,10 @@
 					<div class="as-cell">
 					{{request.user.appuser.userdefault.shipping_address}}</div>
 				</div>
-				<div class="as-row">
-					<div class="as-cell"></div> 
-					<div class="as-cell">
-						<a href="{% url 'gifterator_user_manager_defaults' %}" class="btn btn-primary float-right">Update</a>
-					</div>
-				</div>
+			</div>
+
+			<div class="margin-top-1">
+				<a href="{% url 'gifterator_user_manager_defaults' %}" class="btn btn-primary">Update</a>
 			</div>
 		</div>
 	</div>

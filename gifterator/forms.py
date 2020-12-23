@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.forms import (
     BooleanField,
     CheckboxInput,
@@ -13,10 +14,14 @@ from django.forms import (
     Textarea,
     TextInput,
     Select,
+    URLInput,
 )
 
 from gifterator.models import (
+    AppUser,
     GiftExchange,
+    GiftList,
+    GiftListItem,
     ExchangeParticipant,
     UserDefault,
 )
@@ -36,8 +41,12 @@ class UserDefaultForm(ModelForm):
             widgets[field] = Textarea(attrs={'class': 'form-control', 'rows': 5})
 
 
+class ParticipantExchangeGiftList(ModelForm):
+    pass
+
 
 class ParticipantDetailsForm(ModelForm):
+
     def __init__(self, giftexchange, *args, **kwargs):
         super(ParticipantDetailsForm, self).__init__(*args, **kwargs)
         if giftexchange.locked:
@@ -97,12 +106,55 @@ class GiftExchangeBaseForm(Form):
     spending_limit = CharField(
         widget=NumberInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
     )
-    exchange_in_person=BooleanField(
+    exchange_in_person = BooleanField(
         widget=CheckboxInput(attrs={'class': 'form-control'}),
         label='This gift exchange will take in place in person (e.g. not on a virtual hangout or asynchronously)',
         help_text='If the exchange is not in person, participants will be required to provide a shipping address',
         required=False
     )
+    created_by_pk = CharField(
+        widget=HiddenInput()
+    )
+    giftexchange_pk = CharField(
+        widget=HiddenInput()
+    )
+
+    def __init__(self, giftexchange, non_model_initial, *args, **kwargs):
+        super(GiftExchangeBaseForm, self).__init__(*args, **kwargs)
+        self.giftexchange = giftexchange
+        self.created_by = AppUser.objects.get(pk=non_model_initial['created_by_pk'])
+        if not self.has_changed():
+            for field in self.fields:
+                if hasattr(giftexchange, field):
+                    init_value = getattr(giftexchange, field)
+                    if init_value is True:
+                        self.fields[field].widget.attrs.update({
+                            'checked': 'checked'
+                        })
+                    elif init_value is False:
+                        pass
+                    else:
+                        self.fields[field].widget.attrs.update({
+                            'value': init_value
+                        })
+                elif field in non_model_initial:
+                    self.fields[field].widget.attrs.update({
+                        'value': non_model_initial[field]
+                    })
+
+    def clean_title(self):
+        """ Enforces username and password requirements
+        """
+        super(GiftExchangeBaseForm, self).clean()
+        data = self.cleaned_data
+        appuser_other_exchanges = GiftExchange.objects.exclude(
+            pk=self.giftexchange.pk).filter(
+            created_by=self.created_by
+        ).all()
+        exchange_titles = [ge.title.lower() for ge in appuser_other_exchanges]
+        if data['title'].lower() in exchange_titles:
+            raise ValidationError('You already have a gift exchange with that title.')
+        return data['title']
 
 
 class GiftExchangeCreateForm(GiftExchangeBaseForm, ModelForm):
@@ -112,6 +164,8 @@ class GiftExchangeCreateForm(GiftExchangeBaseForm, ModelForm):
         widget=CheckboxInput(attrs={'class': 'form-control', 'checked': 'checked'}),
         required=False
     )
+    created_by_pk = CharField(widget=HiddenInput())
+
     class Meta:
         model = GiftExchange
         fields = [
@@ -122,6 +176,22 @@ class GiftExchangeCreateForm(GiftExchangeBaseForm, ModelForm):
             'spending_limit',
             'exchange_in_person',
         ]
+        widgets = {
+            'created_by_pk': HiddenInput()
+        }
+
+    def clean(self):
+        """ Enforces username and password requirements
+        """
+        super(GiftExchangeCreateForm, self).clean()
+        data = self.cleaned_data
+        appuser = AppUser.objects.get(pk=data['created_by_pk'])
+        appuser_exchanges = GiftExchange.objects.filter(created_by=appuser).all()
+        exchange_titles = [ge.title.lower() for ge in appuser_exchanges]
+        if data['title'].lower() in exchange_titles:
+            raise ValidationError('You already have a gift exchange with that title.')
+        return data
+
 
 class ParticipantEmailForm(Form):
     js_target = CharField(
@@ -160,3 +230,34 @@ class SendMessageForm(Form):
         ),
         help_text='Plain text only! Any HTML or script tags will be stripped from your message.'
     )
+
+
+class CreateGiftspoForm(ModelForm):
+    class Meta:
+        model = GiftList
+        fields = ['nickname']
+        widgets = {
+            'nickname': TextInput(attrs={'class': 'form-control'}),
+        }
+
+        labels = {
+            'nickname': 'Give your list a memorable name'
+        }
+
+        help_texts = {
+            'nickname': 'This will only be visible to you'
+        }
+
+class GiftspoItemForm(ModelForm):
+    class Meta:
+        model = GiftListItem
+        fields = ['web_link', 'nickname', 'description']
+        widgets = {
+            'web_link': URLInput(attrs={'class': 'form-control'}),
+            'nickname': TextInput(attrs={'class': 'form-control'}),
+            'description': Textarea(attrs={
+                'class': 'form-control',
+                'autocomplete': 'off',
+                'rows': 5
+            })
+        }

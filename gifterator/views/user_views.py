@@ -3,10 +3,13 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, resolve_url
 from django.template import loader
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from datetime import datetime
 
 from gifterator.forms import (
+    CreateGiftspoForm,
+    GiftspoItemForm,
     GiftExchangeBaseForm,
     GiftExchangeCreateForm,
     ParticipantDetailsForm,
@@ -16,6 +19,8 @@ from gifterator.mailer import GifteratorMailer
 from gifterator.models import (
     ExchangeAssignment,
     GiftExchange,
+    GiftList,
+    GiftListItem,
     ExchangeParticipant,
     AppUser,
 )
@@ -145,7 +150,7 @@ class GiftExchangeFormView(GifteratorBase):
         ]
 
     def get(self, request, *args, **kwargs):
-        form = self.form()
+        form = self.form(initial={'created_by_pk': self.appuser.pk})
 
         self.context.update({'form': form})
 
@@ -181,3 +186,197 @@ class GiftExchangeFormView(GifteratorBase):
         self.context.update({'form': form})
 
         return HttpResponse(self.template.render(self.context, request))
+
+
+class GiftspoListDashboard(GifteratorBase):
+    def setup(self, request, *args, **kwargs):
+        super(GiftspoListDashboard, self).setup(request, *args, **kwargs)
+        self.template = loader.get_template('gifterator/giftspo_list_dashboard.html')
+        self.giftspo_lists = self.appuser.giftlist_set.all()
+        self.context.update({
+            'giftspo_lists': self.giftspo_lists,
+            'breadcrumbs': [
+                ('Profile', reverse('session_manager_profile')),
+                ('Giftspo Lists', None)
+            ]
+        })
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse(self.template.render(self.context, request))
+
+
+class CreateGiftspoView(GifteratorBase):
+    def setup(self, request, *args, **kwargs):
+        super(CreateGiftspoView, self).setup(request, *args, **kwargs)
+        self.template = loader.get_template('session_manager/default.html')
+        self.form = CreateGiftspoForm
+        if kwargs.get('list_uuid'):
+            self.giftspo_list = GiftList.objects.get(uuid=kwargs['list_uuid'])
+            self.context.update({
+                'breadcrumbs': [
+                    ('Profile', reverse('session_manager_profile')),
+                    ('Giftspo Lists', reverse('gifterator_user_giftspo_dashboard')),
+                    ('Edit: {}'.format(self.giftspo_list.nickname), None)
+                ]
+            })
+        else:
+            self.giftspo_list = None
+            self.context.update({
+                'breadcrumbs': [
+                    ('Profile', reverse('session_manager_profile')),
+                    ('Giftspo Lists', reverse('gifterator_user_giftspo_dashboard')),
+                    ('New', None)
+                ]
+            })
+
+    def get(self, request, *args, **kwargs):
+        if self.giftspo_list:
+            self.context.update({
+                'form': self.form(
+                    initial={
+                        'nickname': self.giftspo_list.nickname
+                    }
+                )
+            })
+        else:
+            self.context.update({
+                'form': self.form()
+            })
+        return HttpResponse(self.template.render(self.context, request))
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+
+            if self.giftspo_list:
+                self.giftspo_list.nickname = request.POST['nickname']
+                self.giftspo_list.save()
+                return redirect(reverse('gifterator_user_giftspo_dashboard'))
+
+            new_giftspo = GiftList(appuser=self.appuser, nickname=request.POST['nickname'])
+            new_giftspo.save()
+            messages.success(request, 'Created your Giftspo List! Now add stuff to it!')
+            return_url = reverse(
+                'gifterator_user_giftspo_additem',
+                kwargs={
+                    'list_uuid': new_giftspo.uuid
+                }
+            )
+            return redirect(return_url)
+        else:
+            messages.error(request, 'Something went wrong!')
+            self.context.update({
+                'form': form
+            })
+            return HttpResponse(self.template.render(self.context, request))
+
+
+class DeleteGiftspoView(GifteratorBase):
+    def setup(self, request, *args, **kwargs):
+        super(DeleteGiftspoView, self).setup(request, *args, **kwargs)
+        self.giftspo_list = GiftList.objects.get(uuid=kwargs['list_uuid'])
+        self.return_url = reverse('gifterator_user_giftspo_dashboard')
+        self.context.update({
+            'breadcrumbs': [
+                ('Profile', reverse('session_manager_profile')),
+                ('Giftspo Lists', reverse('gifterator_user_giftspo_dashboard')),
+                ('Delete', None)
+            ]
+        })
+
+    def get(self, request, *args, **kwargs):
+        template = loader.get_template('gifterator/confirm_action.html')
+        self.context.update({
+            'confirm_text': 'Permantently delete Giftspo list "{}"'.format(self.giftspo_list.nickname),
+            'cancel_action': self.return_url
+        })
+        return HttpResponse(template.render(self.context, request))
+
+    def post(self, request, *args, **kwargs):
+        messages.info(request, 'Deleted Giftspo List "{}"'.format(self.giftspo_list.nickname))
+        self.giftspo_list.delete()
+        return redirect(self.return_url)
+
+
+class GiftspoItemView(GifteratorBase):
+    def setup(self, request, *args, **kwargs):
+        super(GiftspoItemView, self).setup(request, *args, **kwargs)
+        self.template = loader.get_template('gifterator/giftspo_list_item.html')
+        self.giftspo_list = GiftList.objects.get(uuid=kwargs['list_uuid'])
+        self.context.update({
+            'breadcrumbs': [
+                ('Profile', reverse('session_manager_profile')),
+                ('Giftspo Lists', reverse('gifterator_user_giftspo_dashboard')),
+                ('Add/Edit Item', None)
+            ],
+        })
+        if kwargs.get('item_uuid'):
+            self.giftlistitem = GiftListItem.objects.get(uuid=kwargs['item_uuid'])
+            self.reload_url = None
+        else:
+            self.giftlistitem = None
+            self.reload_url = reverse(
+                'gifterator_user_giftspo_additem',
+                kwargs={
+                    'list_uuid': self.giftspo_list.uuid
+                }
+            )
+        self.form = GiftspoItemForm
+        self.back_url = reverse('gifterator_user_giftspo_dashboard')
+
+    def get(self, request, *args, **kwargs):
+        if self.giftlistitem:
+            self.context.update({
+                'form': self.form(initial={
+                    'web_link': self.giftlistitem.web_link,
+                    'description': self.giftlistitem.description,
+                    'nickname': self.giftlistitem.nickname
+                })
+            })
+        else:
+            self.context.update({
+                'form': self.form()
+            })
+        return HttpResponse(self.template.render(self.context, request))
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            if self.giftlistitem:
+                self.giftlistitem.nickname = request.POST['nickname']
+                self.giftlistitem.web_link = request.POST['web_link']
+                self.giftlistitem.description = request.POST['description']
+                self.giftlistitem.save()
+                messages.success(request, 'Updated item.')
+                return redirect(self.back_url)
+            else:
+                giftlistitem = GiftListItem(
+                    giftlist=self.giftspo_list,
+                    nickname=request.POST['nickname'],
+                    web_link=request.POST['web_link'],
+                    description=request.POST['description'],
+                )
+                giftlistitem.save()
+                messages.success(
+                    request,
+                    mark_safe(
+                        'List updated! Add another item or&nbsp;<a href="{}">go back to your Giftspo lists</a>.'.format(
+                            self.back_url
+                        )
+                    )
+                )
+                return redirect(self.reload_url)
+        else:
+            messages.error(request, 'Something went wrong!')
+            self.context.update({
+                'form': form
+            })
+            return HttpResponse(self.template.render(self.context, request))
+
+
+class CreateGiftspoDeleteItem(GifteratorBase):
+    def post(self, request, *args, **kwargs):
+        return_url = reverse('gifterator_user_giftspo_dashboard')
+        item = GiftListItem.objects.get(uuid=kwargs['item_uuid'])
+        item.delete()
+        return redirect(return_url)

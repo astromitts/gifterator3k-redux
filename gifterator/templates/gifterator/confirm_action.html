@@ -1,0 +1,20 @@
+{% extends 'base/project_base.html' %}
+{% block page_content %}
+		<div class="row">
+			</div>
+		<div class="row">
+			<div class="col">
+				<form method="POST" action="{% if confirm_action %}{{confirm_action}}{% endif %}">
+					{% csrf_token %}
+					<input 
+						type="submit" 
+						class="btn btn-danger"
+						value="{% if confirm_text %}{{confirm_text}}{% else %}Confirm{% endif %}">
+				</form>
+			</div>
+			<div class="col">
+				<a href="{{cancel_action}}" class="btn btn-success">Cancel
+				</a>
+			</div>
+		</div>
+{% endblock %}

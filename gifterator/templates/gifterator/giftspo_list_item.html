@@ -1,4 +1,9 @@
 {% extends 'base/project_base.html' %}
+{% load static apptags %}
+
+{% block extra_js %}
+	<script type="text/javascript" src="{% static 'js/giftspoUtils.js' %}"></script>
+{% endblock %}
 
 {% block page_content %}
 	{% if form %}
