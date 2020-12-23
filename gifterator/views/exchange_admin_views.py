@@ -64,7 +64,7 @@ class GiftExchangeAdminAppInvite(GifteratorBase):
     def post(self, request, *args, **kwargs):
         form = self.form(request.POST)
         if form.is_valid():
-            user_exists = SessionManager.get_user_by_username_or_email(request.POST['email'])
+            user_exists = SessionManager.get_user_by_username_or_email(strip_tags(request.POST['email']))
             if user_exists:
                 messages.error(request, '{} already has an account.'.format(user_exists.email))
             else:
@@ -179,7 +179,7 @@ class GiftExchangeAdminDashboardApi(GiftExchangeAdminDashboard):
         post_target = request.POST.get('js_target')
         self.data.update({'postTarget': post_target})
         if post_target == 'email-search':
-            search_results = SessionManager.search(request.POST['email'])
+            search_results = SessionManager.search(strip_tags(request.POST['email']))
             valid_results = []
             for user in search_results.all():
                 if user not in self.active_participant_users:
@@ -198,7 +198,7 @@ class GiftExchangeAdminDashboardApi(GiftExchangeAdminDashboard):
                 'html': result_html
             })
         elif post_target == 'add-user':
-            user = SessionManager.get_user_by_username_or_email(request.POST['user-email'])
+            user = SessionManager.get_user_by_username_or_email(strip_tags(request.POST['user-email']))
             if user == self.user:
                 self.participant.status = 'active'
                 self.participant.save()
@@ -237,7 +237,7 @@ class GiftExchangeAdminDashboardApi(GiftExchangeAdminDashboard):
                 request.POST,
             )
             if exchange_details_form.is_valid():
-                post_data = {field: str(value) for field, value in request.POST.items()}
+                post_data = {field: strip_tags(str(value)) for field, value in request.POST.items()}
                 for field in GiftExchange.boolean_fields():
                     if post_data.get(field) == 'on':
                         post_data[field] = True

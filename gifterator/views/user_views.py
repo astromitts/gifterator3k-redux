@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, resolve_url
 from django.template import loader
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.html import strip_tags
 
 from datetime import datetime
 
@@ -50,9 +51,9 @@ class UserDefaultManager(GifteratorBase):
     def post(self, request, *args, **kwargs):
         form = self.form(request.POST)
         if form.is_valid():
-            post_data = {field: str(value) for field, value in request.POST.items()}
+            post_data = {field: strip_tags(str(value)) for field, value in request.POST.items()}
             self.appuser.userdefault.update(**post_data)
-            messages.success(request, 'Updated your default goft exchange settings')
+            messages.success(request, 'Updated your default gift exchange settings')
             return redirect(self.return_url)
         self.context.update({'form': form})
         return HttpResponse(self.template.render(self.context, request))
@@ -127,7 +128,7 @@ class ExchangeParticipantDetail(GifteratorBase):
     def post(self, request, *args, **kwargs):
         form = self.form(self.giftexchange, request.POST)
         if not self.giftexchange.locked:
-            post_data = {field: str(value) for field, value in request.POST.items()}
+            post_data = {field: strip_tags(str(value)) for field, value in request.POST.items()}
             self.participant.update(**post_data)
             messages.success(request, 'Updated your details for "{}"'.format(self.giftexchange.title))
             return redirect(self.return_url)
@@ -193,7 +194,7 @@ class GiftExchangeFormView(GifteratorBase):
     def post(self, request, *args, **kwargs):
         form = self.form(request.POST)
         if form.is_valid():
-            clean_post = {field: str(value) for field, value in request.POST.items()}
+            clean_post = {field: strip_tags(str(value)) for field, value in request.POST.items()}
             giftexchange = GiftExchange.create(created_by=self.appuser, **clean_post)
             messages.success(request, 'Gift exchange "{}" created'.format(giftexchange.title))
             if request.POST.get('creater_is_participant') == 'on':
@@ -283,11 +284,11 @@ class CreateGiftspoView(GifteratorBase):
         if form.is_valid():
 
             if self.giftspo_list:
-                self.giftspo_list.nickname = request.POST['nickname']
+                self.giftspo_list.nickname = strip_tags(request.POST['nickname'])
                 self.giftspo_list.save()
                 return redirect(reverse('gifterator_user_giftspo_dashboard'))
 
-            new_giftspo = GiftList(appuser=self.appuser, nickname=request.POST['nickname'])
+            new_giftspo = GiftList(appuser=self.appuser, nickname=strip_tags(request.POST['nickname']))
             new_giftspo.save()
             messages.success(request, 'Created your Giftspo List! Now add stuff to it!')
             return_url = reverse(
@@ -388,9 +389,9 @@ class GiftspoItemView(GifteratorBase):
             if request.POST['web_link']:
                 offsite_meta = get_offsite_link_metadata(request.POST['web_link'])
             if self.giftlistitem:
-                self.giftlistitem.name = request.POST['name']
+                self.giftlistitem.name = strip_tags(request.POST['name'])
                 self.giftlistitem.web_link = request.POST['web_link']
-                self.giftlistitem.description = request.POST['description']
+                self.giftlistitem.description = strip_tags(request.POST['description'])
                 self.giftlistitem.meta = offsite_meta
                 self.giftlistitem.save()
                 json_response['status'] = 'success'
@@ -398,9 +399,9 @@ class GiftspoItemView(GifteratorBase):
             else:
                 giftlistitem = GiftListItem(
                     giftlist=self.giftspo_list,
-                    name=request.POST['name'],
+                    name=strip_tags(request.POST['name']),
                     web_link=request.POST['web_link'],
-                    description=request.POST['description'],
+                    description=strip_tags(request.POST['description']),
                     meta=offsite_meta,
                 )
                 giftlistitem.save()

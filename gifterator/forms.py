@@ -245,7 +245,7 @@ class CreateGiftspoForm(ModelForm):
         }
 
         help_texts = {
-            'nickname': 'This will only be visible to you'
+            'nickname': 'Plain text only! Any HTML or script tags will be stripped from your message. This will only be visible to you'
         }
 
 class GiftspoItemForm(ModelForm):
@@ -262,4 +262,8 @@ class GiftspoItemForm(ModelForm):
                 'rows': 5
             }),
             'meta': HiddenInput()
+        }
+        help_texts = {
+            'name': 'Plain text only! Any HTML or script tags will be stripped from your message.',
+            'description': 'Plain text only! Any HTML or script tags will be stripped from your message.'
         }

@@ -84,7 +84,11 @@
 					{{participant.provided_shipping_address}}</p>
 				{% endif %}
 				<div>
-					{% if not linked_giftspo_lists %}
+					{% if not linked_giftspo_lists and not available_lists %}
+					<div class="alert alert-warning">
+						You haven't created any Giftspo lists! Help your giver out by <a href="{% url 'gifterator_user_giftspo_create' %}">creating a Giftspo list</a> and linking it to this exchange!
+					</div>
+					{% elif not linked_giftspo_lists %}
 					<div class="alert alert-warning">
 						You don't have any Giftspo lists linked to this gift exchange. Help your giver out by linking a Giftspo list!
 					</div>
@@ -147,7 +151,7 @@
 			</div>
 		</div>
 
-<div class="row margin-top-2">
+<div class="row">
 	<div class="col">
 		<div class="icon icon-person-multi"></div>
 		<div class="icon-text">Participants</div>
