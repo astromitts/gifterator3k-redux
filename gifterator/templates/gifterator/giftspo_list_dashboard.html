@@ -1,32 +1,36 @@
 {% extends 'base/project_base.html' %}
+{% load static %}
+	
+{% block extra_js %}
+<script type="text/javascript">
+	
+	$(document).ready(function bindModals(){
+		openToolsModal();
+	});
+</script>
+{% endblock %}
 
 {% block page_content %}
 	{% with giftspo_description='What is a giftspo list? It is a list of things you like or might want from some one as a gift. It can be used for people in gift exchanges to figure out exactly what to get you or to give them inspiration based on things you like.' %}
 	<div class="row">
 		<div class="col">
-			<a href="{% url 'gifterator_user_giftspo_create' %}" class="btn btn-success">Start a Giftspo List</a>
+			<a href="{% url 'gifterator_user_giftspo_create' %}" class="btn btn-primary">Start a Giftspo List</a>
 		</div>
 	</div>
-	{% if not giftspo_lists %}
-		<div class="row">
+		<div class="row margin-top-1">
 			<div class="col">
-				<div class="alert alert-warning">
-					You don't have any Giftspo lists yet!<br />
-					{{giftspo_description}}
-					<br /><br />
-					<a href="{% url 'gifterator_user_giftspo_create' %}" class="btn btn-success">Start a Giftspo List</a>
+				<div class="alert alert-info">
+					{% if not giftspo_lists %}
+						You don't have any Giftspo lists yet!<br />
+						{{giftspo_description}}
+						<br /><br />
+						<a href="{% url 'gifterator_user_giftspo_create' %}" class="btn btn-success">Start a Giftspo List</a>
+					{% else %}
+						{{giftspo_description}}
+					{% endif %}
 				</div>
 			</div>
 		</div>
-	{% else %}
-		<div class="row">
-			<div class="col">
-				<div class="alert alert-warning">
-					{{giftspo_description}}
-				</div>
-			</div>
-		</div>
-	{% endif %}
 	{% endwith %}
 	{% if giftspo_lists %}
 		<div class="row margin-top-1">
@@ -61,9 +65,19 @@
 			{% if giftlist.giftlistitem_set.count > 0 %}
 			<div class="row margin-top-1">
 				<div class="col">
+					<div class="table-responsive">
 						<table class="table">
 							{% for item in giftlist.giftlistitem_set.all %}
 							<tr>
+								<td>
+									<a href="" 
+										class="js-tool-modal-handler"
+										data-modal-id="tools-modal_{{item.uuid}}">
+										<img class="tools-icons_action" src="{% static 'css/vendors/miscellaneous-elements/png/024-settings.png' %}" />
+									</a>
+									</a>
+									{% include 'gifterator/user-includes/giftspo-list-tool-modal.html' with item=item %}
+								</td>
 								<td>{{item.name}}</td>
 								<td>
 									{% if item.description %}
@@ -79,27 +93,17 @@
 										<span class="helptext">no web link provided</span>
 									{% endif %}
 								</td>
-								<td>
-									<a type="submit" class="btn btn-primary" 
-										href="{% url 'gifterator_user_giftspo_edititem' item_uuid=item.uuid list_uuid=giftlist.uuid %}" />
-										edit</a>
-								</td>
-								<td>
-									<form method="POST" action="{% url 'gifterator_user_giftspo_deleteitem' item_uuid=item.uuid list_uuid=giftlist.uuid %}">
-										{% csrf_token %}
-										<input type="submit" class="btn btn-danger" value="delete" />
-									</form>
-								</td>
 							</tr>
 							{% endfor %}
 							<tr class="border-bottom">
 								<td colspan="100%">
-									<a class="btn btn-success float-right" 
+									<a class="btn btn-success" 
 										href="{% url 'gifterator_user_giftspo_additem' list_uuid=giftlist.uuid %}">
 									Add items</a>
 								</td>
 							</tr>
 						</table>
+					</div>
 					{% endif %}
 				</div>
 			</div>

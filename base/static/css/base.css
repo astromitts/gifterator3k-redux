@@ -1,7 +1,16 @@
 /* Variables */
 /* Bootstrap overrides */
 ol.breadcrumb {
-  background-color: #FFFFFF;
+  background-color: inherit;
+}
+
+li.breadcrumb-item {
+  font-weight: bold;
+}
+
+li.breadcrumb-item.active {
+  font-weight: normal;
+  color: #462202;
 }
 
 li.list-group-item {
@@ -9,7 +18,7 @@ li.list-group-item {
 }
 
 .navbar-light {
-  background-color: #21618C !important;
+  background-color: #ea862f !important;
   color: #000000;
 }
 .navbar-light a {
@@ -25,7 +34,7 @@ li.list-group-item {
 }
 .navbar a.navbar-brand {
   font-family: "Nunito", sans-serif;
-  color: #FFFFFF !important;
+  color: #462202 !important;
   font-weight: bold;
   font-size: 1.5rem;
 }
@@ -46,6 +55,7 @@ li.list-group-item {
 }
 .navbar a.nav-link {
   font-size: 1.2rem;
+  color: #462202 !important;
 }
 .navbar img.profile-icon {
   width: 3rem;
@@ -130,11 +140,11 @@ span.helptext_required {
 }
 
 .content-container {
-  padding-bottom: 16rem;
+  padding-bottom: 20rem;
 }
 @media (min-width: 768px) {
   .content-container {
-    padding-bottom: 12rem;
+    padding-bottom: 14rem;
   }
 }
 
@@ -142,14 +152,14 @@ span.helptext_required {
   bottom: 0;
   position: absolute;
   left: 0;
-  margin-top: 3rem;
+  margin-top: 5rem;
   width: 100%;
-  background-color: #21618C;
-  color: #FFFFFF;
+  background-color: #ea862f;
+  color: #462202 !important;
   padding: 2rem 0;
 }
 .footer a {
-  color: #FFFFFF;
+  color: #462202 !important;
   text-decoration: underline;
 }
 
@@ -178,14 +188,15 @@ span.helptext_required {
 body {
   font-family: "Lato", sans-serif;
   font-weight: 300;
-  color: #3E474C;
+  color: #462202;
+  background-color: #fbf9f5;
 }
 body a {
   color: #21618C;
 }
 
 h1, h2, h3, h4 {
-  color: #3E3C3C;
+  color: #462202;
   font-family: "Nunito", sans-serif;
 }
 
@@ -202,7 +213,7 @@ h2 {
 }
 
 .main-content {
-  margin-top: 1rem;
+  padding-top: 1rem;
 }
 
 .default-hidden {
@@ -354,6 +365,9 @@ h2 {
 }
 .tools-icons_flip90 {
   transform: rotate(90deg);
+}
+.tools-icons_action {
+  width: 2rem;
 }
 
 .email-preview {

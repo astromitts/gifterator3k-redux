@@ -76,3 +76,11 @@ function doSynchedGet(targetUrl) {
 	});
 	return resultData;
 }
+
+function openToolsModal() {
+	$('a.js-tool-modal-handler').click(function openModal(event){
+		event.preventDefault();
+		var modalID = $(this).attr('data-modal-id');
+		$('#' + modalID).modal('show');
+	});
+}

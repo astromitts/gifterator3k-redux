@@ -35,15 +35,16 @@
 <div class="page-container">
 	<div class="content-container">
 	{% block header_nav %}
-		<nav class="navbar navbar-expand-sm bg-light navbar-light">
+		<nav class="navbar navbar-expand-sm bg-light navbar-light border-bottom">
 			<div class="container">
 				<a class="navbar-brand float-left" href="{% url 'gifterator_dashboard' %}">
-					<img src="{% static 'site-images/giftbox-icon-text.png' %}" />{{APP_NAME}}
+					{# comment <img src="{% static 'site-images/giftbox-icon-text.png' %}" />#}{{APP_NAME}}
 				</a>
 				<ul class="navbar-nav">
 					{% if request.user.is_authenticated %}
 						<li class="nav-item">
-							<a href="{% url 'session_manager_profile' %}" class="nav-link"><img class="profile-icon" src="{% static 'site-images/profile-icon-filled.png' %}" />
+							<a href="{% url 'session_manager_profile' %}" class="nav-link">
+								{# comment <img class="profile-icon" src="{% static 'site-images/profile-icon-filled.png' %}" /> #}(P)
 							</a>
 						</li>
 					{% else %}
@@ -104,7 +105,7 @@
 		</div>
 	</div>
 </div>
-	<div class="footer">
+	<div class="footer border-top">
 		<div class="row">
 			<div class="col"></div>
 			<div class="col">

@@ -2,33 +2,44 @@
 $screen-sm-min: 360px;
 $screen-md-min: 768px;
 
-$navbar-font: 'Nunito', sans-serif;
 $app-primary: #21618C;
+$navbar-font: 'Nunito', sans-serif;
+$nabar-font-color: #462202;
+$header-bg-color: #ea862f;
+$body-header-color: #3E3C3C;
 
 $bootstrap-warning: #F9E9BA;
 $bootstrap-success: #39884B;
 $bootstrap-primary: #23618B;
 $bootstrap-danger: #9C3640;
 
-$body-font-color: #3E474C;
-$body-header-color: #3E3C3C;
+$body-font-color: #462202;
 $body-font: 'Lato', sans-serif;
 $body-font-weight: 300;
-
+$body-color: #fbf9f5;
 
 
 /* Bootstrap overrides */
 
 ol.breadcrumb {
-	background-color: #FFFFFF;
+	background-color: inherit;
 }
+
+li.breadcrumb-item {
+	font-weight: bold;
+}
+
+li.breadcrumb-item.active {
+		font-weight: normal;
+		color: $nabar-font-color;
+	}
 
 li.list-group-item {
 	border: 0;
 }
 
 .navbar-light {
-	background-color: $app-primary !important;
+	background-color: $header-bg-color !important;
 	color: #000000;
 	a {
 		font-family: $body-font;
@@ -44,7 +55,7 @@ li.list-group-item {
 	font-family: $navbar-font;
 	a.navbar-brand {
 		font-family: $navbar-font;
-		color: #FFFFFF !important;
+		color: $nabar-font-color !important;
 		font-weight: bold;
 		font-size: 1.5rem;
 	 	@media (min-width: #{$screen-md-min}) {	
@@ -61,6 +72,7 @@ li.list-group-item {
 	}
 	a.nav-link {
 		font-size: 1.2rem;
+		color: $nabar-font-color !important;
 	}
 	img.profile-icon{
 		width: 3rem;
@@ -150,9 +162,9 @@ span.helptext{
  }
 
  .content-container {
- 	padding-bottom: 16rem;
+ 	padding-bottom: 20rem;
  	@media (min-width: #{$screen-md-min}) {	
- 		padding-bottom: 12rem;
+ 		padding-bottom: 14rem;
  	}
  }
 
@@ -160,13 +172,13 @@ span.helptext{
 	bottom: 0;
 	position: absolute;
 	left: 0;
-	margin-top: 3rem;
+	margin-top: 5rem;
 	width: 100%;
-	background-color: $app-primary;
-	color: #FFFFFF;
+	background-color: $header-bg-color;
+	color: $nabar-font-color !important;
 	padding: 2rem 0;
 	a {
-		color: #FFFFFF;
+		color: $nabar-font-color !important;
 		text-decoration: underline;
 	}
 }
@@ -197,13 +209,14 @@ body {
 	font-family: $body-font;
 	font-weight: $body-font-weight;
 	color: $body-font-color;
+	background-color: $body-color;
 	a {
 		color: $app-primary;
 	}
 }
 
 h1, h2, h3, h4 {
-	color: $body-header-color;
+	color: $nabar-font-color;
 	font-family: $navbar-font;
 }
 
@@ -220,7 +233,7 @@ h2 {
 }
 
 .main-content {
-	margin-top: 1rem;
+	padding-top: 1rem;
 }
 
 .default-hidden {
@@ -371,6 +384,9 @@ h2 {
 	}
 	&_flip90 {
 		transform: rotate(90deg);
+	}
+	&_action {
+		width: 2rem;
 	}
 }
 
